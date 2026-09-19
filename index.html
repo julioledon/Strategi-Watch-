@@ -203,7 +203,17 @@
     </div>
 
     <div id="watchlist"></div>
+<div id="assetPanel" style="display:none; margin-top:25px;" class="watch-box">
 
+  <h2 id="assetTitle">Activo</h2>
+
+  <p id="assetInfo">
+
+    Selecciona un símbolo de tu lista para ver su información.
+
+  </p>
+
+</div>
   </section>
 
 </main>
@@ -223,26 +233,8 @@
       JSON.stringify(symbols)
     );
   }
-function renderWatchlist() {
-  const watchlist = document.getElementById("watchlist");
 
-  watchlist.innerHTML = "";
-
-  symbols.forEach((symbol, index) => {
-    const item = document.createElement("div");
-    item.innerHTML = `
-      <span>${symbol}</span>
-      <button onclick="removeSymbol(${index})">Eliminar</button>
-    `;
-    watchlist.appendChild(item);
-  });
-}
-  function save() {
-  localStorage.setItem(
-    "strategiWatch",
-    JSON.stringify(symbols)
-  );
-}
+  
   function render() {
 
     const list = document.getElementById("watchlist");
@@ -256,7 +248,17 @@ function renderWatchlist() {
       item.className = "item";
 
       item.innerHTML = `
-        <strong>${symbol}</strong>
+        <strong
+
+  onclick="selectSymbol('${symbol}')"
+
+  style="cursor:pointer; color:#39a9ff;"
+
+>
+
+  ${symbol}
+
+</strong>
 
         <button
           class="remove"
@@ -300,7 +302,23 @@ function renderWatchlist() {
     render();
 
   }
+function selectSymbol(symbol) {
 
+  document.getElementById("symbol").value = symbol;
+
+  const panel = document.getElementById("assetPanel");
+
+  const title = document.getElementById("assetTitle");
+
+  const info = document.getElementById("assetInfo");
+
+  panel.style.display = "block";
+
+  title.textContent = symbol;
+
+  info.textContent = "Cargando información de " + symbol + "...";
+
+}
   document
     .getElementById("symbol")
     .addEventListener("keypress", function(event) {
