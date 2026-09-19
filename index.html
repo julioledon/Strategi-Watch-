@@ -317,6 +317,14 @@ function selectSymbol(symbol) {
   title.textContent = symbol;
 
   info.textContent = "Cargando información de " + symbol + "...";
+  loadStockData(symbol);
+}
+ 
+  async function loadStockData(symbol) {
+
+  const info = document.getElementById("assetInfo");
+
+  info.textContent = "Buscando datos de " + symbol + "...";
 
 }
   document
