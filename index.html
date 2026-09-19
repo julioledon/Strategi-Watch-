@@ -223,7 +223,26 @@
       JSON.stringify(symbols)
     );
   }
+function renderWatchlist() {
+  const watchlist = document.getElementById("watchlist");
 
+  watchlist.innerHTML = "";
+
+  symbols.forEach((symbol, index) => {
+    const item = document.createElement("div");
+    item.innerHTML = `
+      <span>${symbol}</span>
+      <button onclick="removeSymbol(${index})">Eliminar</button>
+    `;
+    watchlist.appendChild(item);
+  });
+}
+  function save() {
+  localStorage.setItem(
+    "strategiWatch",
+    JSON.stringify(symbols)
+  );
+}
   function render() {
 
     const list = document.getElementById("watchlist");
