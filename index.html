@@ -514,7 +514,23 @@ const resistance = Math.max(...highs);
 const changePercent = ((price - previousClose) / previousClose) * 100;
     
 
-const trend = price >= open ? "ALCISTA 📈" : "BAJISTA 📉";
+let trend;
+
+const intradayChange = ((price - open) / open) * 100;
+
+if (intradayChange > 0.20) {
+
+  trend = "ALCISTA 📈";
+
+} else if (intradayChange < -0.20) {
+
+  trend = "BAJISTA 📉";
+
+} else {
+
+  trend = "LATERAL ➡️";
+
+}
  const sign = changePercent >= 0 ? "+" : "";
 
 info.innerHTML = `
