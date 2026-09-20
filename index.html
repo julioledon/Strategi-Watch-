@@ -296,6 +296,16 @@
     symbols.push(symbol);
 
     save();
+
+
+updateTime();
+    render();
+
+  }
+
+  selectSymbol(symbol);
+
+}
 function updateTime() {
 
   const now = new Date();
@@ -315,16 +325,6 @@ function updateTime() {
     "Last updated: " + time;
 
 }
-
-updateTime();
-    render();
-
-  }
-
-  selectSymbol(symbol);
-
-}
-
   function removeSymbol(index) {
 
     symbols.splice(index, 1);
