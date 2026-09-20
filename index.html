@@ -275,23 +275,25 @@
 
   function addSymbol() {
 
-    const input =
-      document.getElementById("symbol");
+  const input = document.getElementById("symbol");
 
-    const symbol =
-      input.value.trim().toUpperCase();
+  const symbol = input.value.trim().toUpperCase();
 
-    if (!symbol) return;
+  if (!symbol) return;
 
-    if (!symbols.includes(symbol)) {
-      symbols.push(symbol);
-      save();
-      render();
-    }
+  if (!symbols.includes(symbol)) {
 
-    input.value = "";
+    symbols.push(symbol);
+
+    save();
+
+    render();
 
   }
+
+  selectSymbol(symbol);
+
+}
 
   function removeSymbol(index) {
 
