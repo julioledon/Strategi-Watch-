@@ -168,7 +168,13 @@
 
 <header>
   <div class="logo">Strategi <span>Watch</span></div>
-  <div class="status">● Sistema activo</div>
+  <div class="status">
+
+  ● System Active<br>
+
+  <span id="lastUpdate">Last updated: --:--</span>
+
+</div>
 </header>
 
 <main>
@@ -290,7 +296,27 @@
     symbols.push(symbol);
 
     save();
+function updateTime() {
 
+  const now = new Date();
+
+  const time = now.toLocaleTimeString("en-US", {
+
+    hour: "numeric",
+
+    minute: "2-digit",
+
+    hour12: true
+
+  });
+
+  document.getElementById("lastUpdate").textContent =
+
+    "Last updated: " + time;
+
+}
+
+updateTime();
     render();
 
   }
@@ -432,7 +458,7 @@ info.style.color = changePercent >= 0 ? "#63e6a5" : "#ff5c5c";
 setInterval(() => {
 
   updateWatchlistQuotes();
-
+  updateTime();
   const symbol = document.getElementById("symbol").value.trim().toUpperCase();
 
   if (symbol) {
