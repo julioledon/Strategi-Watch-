@@ -499,6 +499,11 @@ const high = result.meta.regularMarketDayHigh;
 
 const low = result.meta.regularMarketDayLow;
 const changePercent = ((price - previousClose) / previousClose) * 100;
+    const support = low;
+
+const resistance = high;
+
+const trend = price >= open ? "ALCISTA 📈" : "BAJISTA 📉";
  const sign = changePercent >= 0 ? "+" : "";
 
 info.innerHTML = `
