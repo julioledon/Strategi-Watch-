@@ -414,7 +414,40 @@ function selectSymbol(symbol) {
       const url =
 
         `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=1d&range=5d`;
+const strategyUrl =
 
+  `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=1h&range=1mo`;
+      const strategyResponse = await fetch(
+
+  `https://api.allorigins.win/raw?url=${encodeURIComponent(strategyUrl)}`
+
+);
+
+const strategyData = await strategyResponse.json();
+
+const strategyResult = strategyData.chart.result[0];
+      const strategyQuote = strategyResult.indicators.quote[0];
+
+const closes1H = strategyQuote.close.filter(
+const recent1H = closes1H.slice(-6);
+
+let bearishStructure1H = false;
+
+if (recent1H.length >= 6) {
+
+  bearishStructure1H =
+
+    recent1H[5] < recent1H[3] &&
+
+    recent1H[3] < recent1H[1];
+
+}
+      console.log("Estrategia #1 - cierres 1H:", recent1H);
+
+console.log("Estrategia #1 - estructura bajista:", bearishStructure1H);
+  value => value != null
+
+);
       const response = await fetch(
 
         `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`
