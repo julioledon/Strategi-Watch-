@@ -546,7 +546,7 @@ info.innerHTML = `
   Cierre anterior: $${previousClose}
 <br><br>
 
-Tendencia: ${trend}<br>
+Tendencia: <span style="color:${trend.includes('ALCISTA') ? '#63e6a5' : trend.includes('BAJISTA') ? '#ff5c5c' : '#ffd166'}">${trend}</span><br>
 
 Soporte: $${support.toFixed(2)}<br>
 
