@@ -493,11 +493,27 @@ document.getElementById("lastUpdated").textContent =
 
     const price = result.meta.regularMarketPrice;
 const previousClose = result.meta.chartPreviousClose;
+const open = result.meta.regularMarketOpen;
 
+const high = result.meta.regularMarketDayHigh;
+
+const low = result.meta.regularMarketDayLow;
 const changePercent = ((price - previousClose) / previousClose) * 100;
  const sign = changePercent >= 0 ? "+" : "";
 
-info.textContent = `${symbol}: $${price}  ${sign}${changePercent.toFixed(2)}%`;   
+info.innerHTML = `
+
+  ${symbol}: $${price} ${sign}${changePercent.toFixed(2)}%<br><br>
+
+  Apertura: $${open}<br>
+
+  Máximo: $${high}<br>
+
+  Mínimo: $${low}<br>
+
+  Cierre anterior: $${previousClose}
+
+`; 
 info.style.color = changePercent >= 0 ? "#63e6a5" : "#ff5c5c";
   } catch (error) {
 
