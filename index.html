@@ -349,7 +349,7 @@ const changePercent = ((price - previousClose) / previousClose) * 100;
  const sign = changePercent >= 0 ? "+" : "";
 
 info.textContent = `${symbol}: $${price}  ${sign}${changePercent.toFixed(2)}%`;   
-
+info.style.color = changePercent >= 0 ? "#63e6a5" : "#ff5c5c";
   } catch (error) {
 
     info.textContent = "ERROR: " + error.message;
