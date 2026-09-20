@@ -498,10 +498,17 @@ const open = result.indicators.quote[0].open[0];
 const high = result.meta.regularMarketDayHigh;
 
 const low = result.meta.regularMarketDayLow;
-const changePercent = ((price - previousClose) / previousClose) * 100;
-    const support = low;
+    const quote = result.indicators.quote[0];
 
-const resistance = high;
+const highs = quote.high.filter(value => value != null);
+
+const lows = quote.low.filter(value => value != null);
+
+const support = Math.min(...lows);
+
+const resistance = Math.max(...highs);
+const changePercent = ((price - previousClose) / previousClose) * 100;
+    
 
 const trend = price >= open ? "ALCISTA 📈" : "BAJISTA 📉";
  const sign = changePercent >= 0 ? "+" : "";
