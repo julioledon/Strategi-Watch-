@@ -402,7 +402,19 @@ function selectSymbol(symbol) {
     }
 
   }
+const now = new Date();
 
+document.getElementById("lastUpdated").textContent =
+
+  "Last updated: " +
+
+  now.toLocaleTimeString([], {
+
+    hour: "2-digit",
+
+    minute: "2-digit"
+
+  });
 }
   
   async function loadStockData(symbol) {
