@@ -399,6 +399,7 @@ function selectSymbol(symbol) {
 
   info.textContent = "Cargando información de " + symbol + "...";
   loadStockData(symbol);
+  panel.scrollIntoView({ behavior: "smooth", block: "start" });
 }
  async function updateWatchlistQuotes() {
 
