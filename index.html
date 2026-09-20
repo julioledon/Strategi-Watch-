@@ -427,7 +427,21 @@ info.style.color = changePercent >= 0 ? "#63e6a5" : "#ff5c5c";
     });
 
   render();
+// Actualizar precios automáticamente cada 60 segundos
 
+setInterval(() => {
+
+  updateWatchlistQuotes();
+
+  const symbol = document.getElementById("symbol").value.trim().toUpperCase();
+
+  if (symbol) {
+
+    loadStockData(symbol);
+
+  }
+
+}, 60000);
 </script>
 
 </body>
