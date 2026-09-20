@@ -306,6 +306,55 @@ updateTime();
   selectSymbol(symbol);
 
 }
+function updateMarketStatus() {
+
+  const status = document.getElementById("marketStatus");
+
+  const now = new Date();
+
+  const nyTime = new Date(
+
+    now.toLocaleString("en-US", { timeZone: "America/New_York" })
+
+  );
+
+  const day = nyTime.getDay();
+
+  const hour = nyTime.getHours();
+
+  const minutes = nyTime.getMinutes();
+
+  const currentMinutes = hour * 60 + minutes;
+
+  const marketOpen = 9 * 60 + 30;
+
+  const marketClose = 16 * 60;
+
+  const isWeekday = day >= 1 && day <= 5;
+
+  if (
+
+    isWeekday &&
+
+    currentMinutes >= marketOpen &&
+
+    currentMinutes < marketClose
+
+  ) {
+
+    status.textContent = "● Market Open";
+
+    status.style.color = "#63e6a5";
+
+  } else {
+
+    status.textContent = "● Market Closed";
+
+    status.style.color = "#ff6b6b";
+
+  }
+
+}
 function updateTime() {
 
   const now = new Date();
