@@ -493,7 +493,7 @@ document.getElementById("lastUpdated").textContent =
 
     const price = result.meta.regularMarketPrice;
 const previousClose = result.meta.chartPreviousClose;
-const open = result.meta.regularMarketOpen;
+const open = result.indicators.quote[0].open[0];
 
 const high = result.meta.regularMarketDayHigh;
 
