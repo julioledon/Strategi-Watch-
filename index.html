@@ -517,7 +517,13 @@ info.innerHTML = `
   Mínimo: $${low}<br>
 
   Cierre anterior: $${previousClose}
+<br><br>
 
+Tendencia: ${trend}<br>
+
+Soporte: $${support.toFixed(2)}<br>
+
+Resistencia: $${resistance.toFixed(2)}
 `; 
 info.style.color = changePercent >= 0 ? "#63e6a5" : "#ff5c5c";
   } catch (error) {
