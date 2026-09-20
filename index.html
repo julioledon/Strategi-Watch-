@@ -343,8 +343,12 @@ function selectSymbol(symbol) {
     const result = data.chart.result[0];
 
     const price = result.meta.regularMarketPrice;
+const previousClose = result.meta.previousClose;
 
-    info.textContent = `${symbol}: $${price}`;
+const changePercent = ((price - previousClose) / previousClose) * 100;
+ const sign = changePercent >= 0 ? "+" : "";
+
+info.textContent = `${symbol}: $${price}  ${sign}${changePercent.toFixed(2)}%`;   
 
   } catch (error) {
 
