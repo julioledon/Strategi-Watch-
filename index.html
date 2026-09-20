@@ -272,7 +272,7 @@
       `;
 
       list.appendChild(item);
-
+      loadQuote(symbol);
     });
 
   }
@@ -325,7 +325,60 @@ function selectSymbol(symbol) {
   info.textContent = "Cargando información de " + symbol + "...";
   loadStockData(symbol);
 }
- 
+ async function updateWatchlistQuotes() {
+
+  for (const symbol of symbols) {
+
+    try {
+
+      const url =
+
+        `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=1d&range=1d`;
+
+      const response = await fetch(
+
+        `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`
+
+      );
+
+      const data = await response.json();
+
+      const result = data.chart.result[0];
+
+      const price = result.meta.regularMarketPrice;
+
+      const previousClose = result.meta.previousClose;
+
+      const changePercent =
+
+        ((price - previousClose) / previousClose) * 100;
+
+      const sign = changePercent >= 0 ? "+" : "";
+
+      const quote = document.getElementById(`quote-${symbol}`);
+
+      if (quote) {
+
+        quote.textContent =
+
+          `$${price}  ${sign}${changePercent.toFixed(2)}%`;
+
+        quote.style.color =
+
+          changePercent >= 0 ? "#63e6a5" : "#ff6b6b";
+
+      }
+
+    } catch (error) {
+
+      console.error("Error cargando " + symbol, error);
+
+    }
+
+  }
+
+}
+  updateWatchlistQuotes();
   async function loadStockData(symbol) {
 
   const info = document.getElementById("assetInfo");
