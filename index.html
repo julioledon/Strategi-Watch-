@@ -324,9 +324,32 @@ function selectSymbol(symbol) {
 
   const info = document.getElementById("assetInfo");
 
-  info.textContent = "Buscando datos de " + symbol + "...";
+ try {
+
+  const response = await fetch(
+
+    `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=1d&range=1d`
+
+  );
+
+  const data = await response.json();
+
+  const result = data.chart.result[0];
+
+  const price = result.meta.regularMarketPrice;
+
+  info.textContent = `${symbol}: $${price}`;
+
+} catch (error) {
+
+  info.textContent = "No se pudieron cargar los datos.";
+
+  console.error(error);
 
 }
+    
+
+} 
   document
     .getElementById("symbol")
     .addEventListener("keypress", function(event) {
