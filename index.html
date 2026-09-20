@@ -232,7 +232,7 @@
 
   let symbols =
     JSON.parse(localStorage.getItem("strategiWatch")) || [];
-
+  let strategy2Signals = {};
   function save() {
     localStorage.setItem(
       "strategiWatch",
@@ -451,6 +451,206 @@ if (recent1H.length >= 6) {
 console.log("Estrategia #1 - cierres 1H:", recent1H);
 
 console.log("Estrategia #1 - estructura bajista:", bearishStructure1H);
+
+      // ===============================
+
+// ESTRATEGIA #2
+
+// Cambio de tendencia a la baja
+
+// Temporalidad: 15 minutos
+
+// ===============================
+
+const strategy15Url =
+
+  `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=15m&range=5d`;
+
+const strategy15Response = await fetch(
+
+  `https://api.allorigins.win/raw?url=${encodeURIComponent(strategy15Url)}`
+
+);
+
+const strategy15Data = await strategy15Response.json();
+
+const strategy15Result = strategy15Data.chart.result[0];
+
+const strategy15Quote =
+
+  strategy15Result.indicators.quote[0];
+
+const closes15 =
+
+  strategy15Quote.close.filter(value => value != null);
+
+console.log(
+
+  "Estrategia #2 - cierres 15M:",
+
+  closes15.slice(-10)
+
+);
+      // Media móvil de 20 períodos (MA20)
+
+let ma20 = null;
+
+if (closes15.length >= 20) {
+
+  const last20Closes = closes15.slice(-20);
+
+  ma20 =
+
+    last20Closes.reduce((total, value) => total + value, 0) / 20;
+
+}
+
+console.log("Estrategia #2 - MA20:", ma20);
+      // Confirmación bajista:
+
+// la vela anterior estaba sobre la MA20,
+
+// la actual cierra debajo de la MA20
+
+// y además es una vela roja.
+
+const opens15 =
+
+  strategy15Quote.open.filter(value => value != null);
+
+let breaksMA20Bearish = false;
+
+if (
+
+  ma20 !== null &&
+
+  closes15.length >= 2 &&
+
+  opens15.length >= 1
+
+) {
+
+  const currentClose = closes15[closes15.length - 1];
+
+  const previousClose15 = closes15[closes15.length - 2];
+
+  const currentOpen = opens15[opens15.length - 1];
+
+  breaksMA20Bearish =
+
+    previousClose15 >= ma20 &&
+
+    currentClose < ma20 &&
+
+    currentClose < currentOpen;
+
+}
+
+console.log(
+
+  "Estrategia #2 - rompe MA20 con vela bajista:",
+
+  breaksMA20Bearish
+
+);
+      // Confirmar estructura bajista en 15 minutos
+
+const recent15 = closes15.slice(-6);
+
+let bearishStructure15 = false;
+
+if (recent15.length >= 6) {
+
+  bearishStructure15 =
+
+    recent15[5] < recent15[3] &&
+
+    recent15[3] < recent15[1];
+
+}
+
+console.log(
+
+  "Estrategia #2 - estructura bajista 15M:",
+
+  bearishStructure15
+
+);
+      // Detectar ruptura de tendencia alcista en 15 minutos
+
+const lows15 =
+
+  strategy15Quote.low.filter(value => value != null);
+
+const recentLows15 = lows15.slice(-6);
+
+let breaksUptrendLine = false;
+
+if (recentLows15.length >= 6 && closes15.length > 0) {
+
+  // Comprobamos que antes existían mínimos ascendentes
+
+  const hadUptrend =
+
+    recentLows15[1] > recentLows15[0] &&
+
+    recentLows15[2] > recentLows15[1] &&
+
+    recentLows15[3] > recentLows15[2];
+
+  // Nivel aproximado de la línea de tendencia
+
+  const trendLineLevel = recentLows15[3];
+
+  const currentClose =
+
+    closes15[closes15.length - 1];
+
+  breaksUptrendLine =
+
+    hadUptrend &&
+
+    currentClose < trendLineLevel;
+
+}
+
+console.log(
+
+  "Estrategia #2 - rompe tendencia alcista:",
+
+  breaksUptrendLine
+
+);// ===============================
+
+// SEÑAL FINAL - ESTRATEGIA #2
+
+// ===============================
+
+let strategy2Signal = "ESPERAR ⏳";
+
+if (
+
+  breaksUptrendLine &&
+
+  breaksMA20Bearish &&
+
+  bearishStructure15
+
+) {
+
+  strategy2Signal = "PUT 🔴";
+
+}
+      
+strategy2Signals[symbol] = strategy2Signal;
+      
+console.log(
+
+  "Estrategia #2 - señal final:",
+
+  strategy2Signal
+
+);
       const response = await fetch(
 
         `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`
@@ -583,10 +783,41 @@ info.innerHTML = `
 <br><br>
 
 Tendencia: <span style="color:${trend.includes('ALCISTA') ? '#63e6a5' : trend.includes('BAJISTA') ? '#ff5c5c' : '#ffd166'}">${trend}</span><br>
+<span style="color:#39a9ff;">
 
-<span style="color:#39a9ff;">Soporte: $${support.toFixed(2)}</span><br>
+  Soporte: $${support.toFixed(2)}
 
-<span style="color:#ffb84d;">Resistencia: $${resistance.toFixed(2)}</span>
+</span><br>
+
+<span style="color:#ffb84d;">
+
+  Resistencia: $${resistance.toFixed(2)}
+
+</span>
+
+<br><br>
+
+<span style="color:white;">
+
+  Estrategia #2 — Cambio de tendencia a la baja:
+
+</span><br>
+
+<strong style="color:${
+
+  strategy2Signals[symbol] === "PUT 🔴"
+
+    ? "#ff5c5c"
+
+    : "#ffd166"
+
+};">
+
+  ${strategy2Signals[symbol] || "ANALIZANDO..."}
+
+</strong>
+
+
 `; 
 info.style.color = changePercent >= 0 ? "#63e6a5" : "#ff5c5c";
   } catch (error) {
