@@ -328,9 +328,15 @@ function selectSymbol(symbol) {
 
   const response = await fetch(
 
-    `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=1d&range=1d`
+    const url =
 
-  );
+  `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=1d&range=1d`;
+
+const response = await fetch(
+
+  `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`
+
+);
 
   const data = await response.json();
 
