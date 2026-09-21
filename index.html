@@ -903,7 +903,60 @@ strategy3Signal = "ESPERAR ⏳";
 // La estrategia #3 solo funciona
 
 // si la tendencia diaria es bajista
+let dailyBearish3 = false;
+      // ===============================
 
+// TENDENCIA DIARIA - ESTRATEGIA #3
+
+// ===============================
+
+const strategy3DailyUrl =
+
+  `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=1d&range=1mo`;
+
+const strategy3DailyResponse = await fetch(
+
+  `https://api.allorigins.win/raw?url=${encodeURIComponent(strategy3DailyUrl)}`
+
+);
+
+const strategy3DailyData =
+
+  await strategy3DailyResponse.json();
+
+const strategy3DailyResult =
+
+  strategy3DailyData.chart.result[0];
+
+const strategy3DailyQuote =
+
+  strategy3DailyResult.indicators.quote[0];
+
+const closes3Daily =
+
+  strategy3DailyQuote.close.filter(value => value != null);
+
+if (closes3Daily.length >= 6) {
+
+  const recentDaily =
+
+    closes3Daily.slice(-6);
+
+  dailyBearish3 =
+
+    recentDaily[5] < recentDaily[3] &&
+
+    recentDaily[3] < recentDaily[1];
+
+}
+
+console.log(
+
+  "Estrategia #3 - tendencia diaria bajista:",
+
+  dailyBearish3
+
+);
 if (dailyBearish3) {
 if (reboundTowardMA20H1) {
 
@@ -939,61 +992,11 @@ console.log(
 
 );
   strategy3Signals[symbol] = strategy3Signal;
-      // ===============================
-
-// TENDENCIA DIARIA - ESTRATEGIA #3
-
-// ===============================
-
-const strategy3DailyUrl =
-
-  `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=1d&range=1mo`;
-
-const strategy3DailyResponse = await fetch(
-
-  `https://api.allorigins.win/raw?url=${encodeURIComponent(strategy3DailyUrl)}`
-
-);
-
-const strategy3DailyData =
-
-  await strategy3DailyResponse.json();
-
-const strategy3DailyResult =
-
-  strategy3DailyData.chart.result[0];
-
-const strategy3DailyQuote =
-
-  strategy3DailyResult.indicators.quote[0];
-
-const closes3Daily =
-
-  strategy3DailyQuote.close.filter(value => value != null);
-
-let dailyBearish3 = false;
-
-if (closes3Daily.length >= 6) {
-
-  const recentDaily =
-
-    closes3Daily.slice(-6);
-
-  dailyBearish3 =
-
-    recentDaily[5] < recentDaily[3] &&
-
-    recentDaily[3] < recentDaily[1];
 
 }
+  
 
-console.log(
 
-  "Estrategia #3 - tendencia diaria bajista:",
-
-  dailyBearish3
-
-);
 console.log(
 
   "Estrategia #2 - señal final:",
