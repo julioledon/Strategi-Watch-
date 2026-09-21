@@ -233,6 +233,7 @@
   let symbols =
     JSON.parse(localStorage.getItem("strategiWatch")) || [];
   let strategy2Signals = {};
+  let strategy3Signals = {};
   function save() {
     localStorage.setItem(
       "strategiWatch",
@@ -643,7 +644,356 @@ if (
 }
       
 strategy2Signals[symbol] = strategy2Signal;
-      
+    // ===============================
+
+// ESTRATEGIA #3
+
+// Rebote en punto medio
+
+// Tendencia a la baja
+
+// ===============================
+
+let strategy3Signal = "ESPERAR ⏳";
+      // ===============================
+
+// DATOS DE 1 HORA - ESTRATEGIA #3
+
+// ===============================
+
+const strategy3H1Url =
+
+  `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=1h&range=1mo`;
+
+const strategy3H1Response = await fetch(
+
+  `https://api.allorigins.win/raw?url=${encodeURIComponent(strategy3H1Url)}`
+
+);
+
+const strategy3H1Data = await strategy3H1Response.json();
+
+const strategy3H1Result = strategy3H1Data.chart.result[0];
+
+const strategy3H1Quote =
+
+  strategy3H1Result.indicators.quote[0];
+
+const closes3H1 =
+
+  strategy3H1Quote.close.filter(value => value != null);
+
+console.log(
+
+  "Estrategia #3 - cierres 1H:",
+
+  closes3H1.slice(-10)
+
+);
+      // ===============================
+
+// MA20 DE 1 HORA - ESTRATEGIA #3
+
+// ===============================
+
+let ma20H1 = null;
+
+if (closes3H1.length >= 20) {
+
+  const last20H1 = closes3H1.slice(-20);
+
+  ma20H1 =
+
+    last20H1.reduce((total, value) => total + value, 0) / 20;
+
+}
+
+console.log(
+
+  "Estrategia #3 - MA20 1H:",
+
+  ma20H1
+
+);
+      // ===============================
+
+// REBOTE HACIA MA20 - 1 HORA
+
+// ESTRATEGIA #3
+
+// ===============================
+
+let reboundTowardMA20H1 = false;
+
+if (ma20H1 !== null && closes3H1.length >= 2) {
+
+  const currentCloseH1 =
+
+    closes3H1[closes3H1.length - 1];
+
+  const previousCloseH1 =
+
+    closes3H1[closes3H1.length - 2];
+
+  reboundTowardMA20H1 =
+
+    currentCloseH1 > previousCloseH1 &&
+
+    currentCloseH1 <= ma20H1;
+
+}
+
+console.log(
+
+  "Estrategia #3 - rebote hacia MA20:",
+
+  reboundTowardMA20H1
+
+);
+      // ===============================
+
+// ZONA DE MA20 - 1 HORA
+
+// ESTRATEGIA #3
+
+// ===============================
+
+let nearMA20H1 = false;
+
+if (ma20H1 !== null && closes3H1.length > 0) {
+
+  const currentCloseH1 =
+
+    closes3H1[closes3H1.length - 1];
+
+  const distanceToMA20 =
+
+    Math.abs(currentCloseH1 - ma20H1) / ma20H1;
+
+  // Consideramos "zona" cuando está a 0.5% o menos
+
+  nearMA20H1 = distanceToMA20 <= 0.005;
+
+}
+
+console.log(
+
+  "Estrategia #3 - cerca de MA20:",
+
+  nearMA20H1
+
+);
+      // ===============================
+
+// RECHAZO BAJISTA - 15 MINUTOS
+
+// ESTRATEGIA #3
+
+// ===============================
+
+const opens3M15 =
+
+  strategy15Quote.open.filter(value => value != null);
+
+const highs3M15 =
+
+  strategy15Quote.high.filter(value => value != null);
+
+const closes3M15 =
+
+  strategy15Quote.close.filter(value => value != null);
+
+let bearishRejection15 = false;
+
+if (
+
+  opens3M15.length > 0 &&
+
+  highs3M15.length > 0 &&
+
+  closes3M15.length > 0
+
+) {
+
+  const currentOpen15 =
+
+    opens3M15[opens3M15.length - 1];
+
+  const currentHigh15 =
+
+    highs3M15[highs3M15.length - 1];
+
+  const currentClose15 =
+
+    closes3M15[closes3M15.length - 1];
+
+  // Vela bajista con rechazo desde arriba
+
+  bearishRejection15 =
+
+    currentClose15 < currentOpen15 &&
+
+    currentHigh15 > currentOpen15;
+
+}
+
+console.log(
+
+  "Estrategia #3 - rechazo bajista 15M:",
+
+  bearishRejection15
+
+);
+      // ===============================
+
+// CONFIRMACIÓN BAJISTA - 1 HORA
+
+// ESTRATEGIA #3
+
+// ===============================
+
+const opens3H1 =
+
+  strategy3H1Quote.open.filter(value => value != null);
+
+let bearishConfirmationH1 = false;
+
+if (
+
+  opens3H1.length > 0 &&
+
+  closes3H1.length >= 2
+
+) {
+
+  const currentOpenH1 =
+
+    opens3H1[opens3H1.length - 1];
+
+  const currentCloseH1 =
+
+    closes3H1[closes3H1.length - 1];
+
+  const previousCloseH1 =
+
+    closes3H1[closes3H1.length - 2];
+
+  bearishConfirmationH1 =
+
+    currentCloseH1 < currentOpenH1 &&
+
+    currentCloseH1 < previousCloseH1;
+
+}
+
+console.log(
+
+  "Estrategia #3 - confirmación bajista 1H:",
+
+  bearishConfirmationH1
+
+);
+      // ===============================
+
+// ESTADOS FINALES - ESTRATEGIA #3
+
+// ===============================
+
+strategy3Signal = "ESPERAR ⏳";
+// La estrategia #3 solo funciona
+
+// si la tendencia diaria es bajista
+
+if (dailyBearish3) {
+if (reboundTowardMA20H1) {
+
+  strategy3Signal = "ACERCÁNDOSE 🟡";
+
+}
+
+if (nearMA20H1) {
+
+  strategy3Signal = "VIGILAR RECHAZO 👀";
+
+}
+
+if (
+
+  nearMA20H1 &&
+
+  bearishRejection15 &&
+
+  bearishConfirmationH1
+
+) {
+
+  strategy3Signal = "PUT CONFIRMADO 🔴";
+
+}
+
+console.log(
+
+  "Estrategia #3 - señal final:",
+
+  strategy3Signal
+
+);
+  strategy3Signals[symbol] = strategy3Signal;
+      // ===============================
+
+// TENDENCIA DIARIA - ESTRATEGIA #3
+
+// ===============================
+
+const strategy3DailyUrl =
+
+  `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=1d&range=1mo`;
+
+const strategy3DailyResponse = await fetch(
+
+  `https://api.allorigins.win/raw?url=${encodeURIComponent(strategy3DailyUrl)}`
+
+);
+
+const strategy3DailyData =
+
+  await strategy3DailyResponse.json();
+
+const strategy3DailyResult =
+
+  strategy3DailyData.chart.result[0];
+
+const strategy3DailyQuote =
+
+  strategy3DailyResult.indicators.quote[0];
+
+const closes3Daily =
+
+  strategy3DailyQuote.close.filter(value => value != null);
+
+let dailyBearish3 = false;
+
+if (closes3Daily.length >= 6) {
+
+  const recentDaily =
+
+    closes3Daily.slice(-6);
+
+  dailyBearish3 =
+
+    recentDaily[5] < recentDaily[3] &&
+
+    recentDaily[3] < recentDaily[1];
+
+}
+
+console.log(
+
+  "Estrategia #3 - tendencia diaria bajista:",
+
+  dailyBearish3
+
+);
 console.log(
 
   "Estrategia #2 - señal final:",
@@ -816,7 +1166,31 @@ Tendencia: <span style="color:${trend.includes('ALCISTA') ? '#63e6a5' : trend.in
   ${strategy2Signals[symbol] || "ANALIZANDO..."}
 
 </strong>
+<br><br>
 
+<span style="color:white;">
+
+  Estrategia #3 — Rebote en punto medio, tendencia a la baja:
+
+</span><br>
+
+<strong style="color:${
+
+  strategy3Signals[symbol] === "PUT CONFIRMADO 🔴"
+
+    ? "#ff5c5c"
+
+    : strategy3Signals[symbol] === "VIGILAR RECHAZO 👀"
+
+    ? "#ffb84d"
+
+    : "#ffd166"
+
+};">
+
+  ${strategy3Signals[symbol] || "ANALIZANDO..."}
+
+</strong>
 
 `; 
 info.style.color = changePercent >= 0 ? "#63e6a5" : "#ff5c5c";
