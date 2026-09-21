@@ -958,20 +958,22 @@ console.log(
 
 );
 if (dailyBearish3) {
-if (reboundTowardMA20H1) {
+if (dailyBearish3 && reboundTowardMA20H1) {
 
   strategy3Signal = "ACERCÁNDOSE 🟡";
 
 }
 
-if (nearMA20H1) {
+if (dailyBearish3 && nearMA20H1) {
 
   strategy3Signal = "VIGILAR RECHAZO 👀";
 
 }
 
 if (
-
+  
+  dailyBearish3 &&
+  
   nearMA20H1 &&
 
   bearishRejection15 &&
