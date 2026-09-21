@@ -995,7 +995,7 @@ console.log(
 );
   strategy3Signals[symbol] = strategy3Signal;
 
-}
+
   
 
 
@@ -1006,6 +1006,8 @@ console.log(
   strategy2Signal
 
 );
+      strategy2Signals[symbol] = strategy2Signal;
+      
       const response = await fetch(
 
         `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`
