@@ -1245,8 +1245,18 @@ Tendencia: <span style="color:${trend.includes('ALCISTA') ? '#63e6a5' : trend.in
   ${strategy3Signals[symbol] || "ANALIZANDO..."}
 
 </strong>
+<br><br>
+
+<strong>Estrategia #4:</strong>
+
+<strong>
+
+  ${strategy4Signals[symbol] || "ANALIZANDO ⏳"}
+
+</strong>
 
 `; 
+    
 info.style.color = changePercent >= 0 ? "#63e6a5" : "#ff6b6b";
   } catch (error) {
 
