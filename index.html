@@ -998,7 +998,46 @@ console.log(
 }
   
  strategy3Signals[symbol] = strategy3Signal
+let strategy4Signal = "VIGILAR REBOTE 👀";
+      const dailyBullish4 =
 
+  dailyClose > dailyMA20;
+      const hourlyBearish4 =
+
+  h1Close < h1MA20;
+      const nearDailyMA20 =
+
+  Math.abs(dailyClose - dailyMA20) / dailyMA20 <= 0.01;
+      const bullishRebound15 =
+
+  m15Close > m15Open;
+      const bullishConfirmationH1 =
+
+  h1Close > h1Open;
+      if (
+
+  dailyBullish4 &&
+
+  hourlyBearish4 &&
+
+  nearDailyMA20 &&
+
+  bullishRebound15 &&
+
+  bullishConfirmationH1
+
+) {
+        strategy4Signal = "CALL CONFIRMADO 🟢";
+        }
+      console.log(
+
+  "Estrategia #4 - señal final:",
+
+  strategy4Signal
+
+);
+      strategy4Signals[symbol] = strategy4Signal;
+        
 console.log(
 
   "Estrategia #2 - señal final:",
