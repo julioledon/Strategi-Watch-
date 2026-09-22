@@ -236,6 +236,7 @@
   let strategy2Signals = {};
   let strategy3Signals = {};
   let strategy4Signals = {};
+  let strategy5Signals = {};
   function save() {
     localStorage.setItem(
       "strategiWatch",
@@ -1107,8 +1108,47 @@ const m15Open =
       
       strategy4Signals[symbol] = strategy4Signal;
       
-        
+        // =========================
 
+// ESTRATEGIA 5
+
+// =========================
+let strategy5Signal = "ESPERAR";
+      const strategy5UpperBand = upperBand;
+
+const strategy5MiddleBand = middleBand;
+
+const strategy5LowerBand = lowerBand;
+      const strategy5BandWidth =
+
+  strategy5UpperBand - strategy5LowerBand;
+
+const strategy5BandWidthPercent =
+
+  (strategy5BandWidth / strategy5MiddleBand) * 100;
+      const strategy5IsLateral =
+
+  strategy5BandWidthPercent <= 2;
+      const strategy5GapAboveUpper =
+
+  price > strategy5UpperBand;
+      const strategy5StartsDropping =
+
+  price < previousPrice;
+      if (
+
+  strategy5IsLateral &&
+
+  strategy5GapAboveUpper &&
+
+  strategy5StartsDropping
+
+) {
+
+  strategy5Signal = "PUT";
+
+}
+      strategy5Signals[symbol] = strategy5Signal;
       
       const response = await fetch(
 
