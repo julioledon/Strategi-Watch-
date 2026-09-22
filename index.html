@@ -237,6 +237,7 @@
   let strategy3Signals = {};
   let strategy4Signals = {};
   let strategy5Signals = {};
+  let strategy6Signals = {};
   function save() {
     localStorage.setItem(
       "strategiWatch",
@@ -1200,8 +1201,43 @@ const strategy5BandWidthPercent =
       
       strategy5Signals[symbol] = strategy5Signal;
       
+// =========================
 
-        
+// ESTRATEGIA 6
+
+// =========================
+
+let strategy6Signal = "ESPERAR";
+      const strategy6UpperBand = upperBand;
+      const strategy6MiddleBand = middleBand;
+      const strategy6LowerBand = lowerBand;
+      const strategy6BandWidth =
+        strategy6UpperBand - strategy6LowerBand;
+      const strategy6BandWidthPercent =
+       (strategy6BandWidth / strategy6MiddleBand) * 100;
+      const strategy6IsLateral =
+        strategy6BandWidthPercent <= 2;
+      const strategy6TouchesLowerBand =
+        price <= strategy6LowerBand;
+      const strategy6StartsRising =
+        price > previousPrice;
+     if (
+
+  strategy6IsLateral &&
+
+  strategy6TouchesLowerBand &&
+
+  strategy6StartsRising
+
+) {
+
+  strategy6Signal = "CALL";
+
+} 
+
+      strategy6Signals[symbol] = strategy6Signal;
+
+      
       const sign = changePercent >= 0 ? "+" : "";
 
       const quote = document.getElementById(`quote-${symbol}`);
