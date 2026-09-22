@@ -232,6 +232,7 @@
 
   let symbols =
     JSON.parse(localStorage.getItem("strategiWatch")) || [];
+  let strategy1Signals = {};
   let strategy2Signals = {};
   let strategy3Signals = {};
   let strategy4Signals = {};
@@ -453,7 +454,23 @@ if (recent1H.length >= 6) {
 console.log("Estrategia #1 - cierres 1H:", recent1H);
 
 console.log("Estrategia #1 - estructura bajista:", bearishStructure1H);
+let strategy1Signal = "ESPERAR ⏳";
 
+if (bearishStructure1H) {
+
+  strategy1Signal = "VIGILAR 👀";
+
+}
+
+strategy1Signals[symbol] = strategy1Signal;
+
+console.log(
+
+  "Estrategia #1 - señal final:",
+
+  strategy1Signal
+
+);
       // ===============================
 
 // ESTRATEGIA #2
@@ -1238,7 +1255,27 @@ Tendencia: <span style="color:${trend.includes('ALCISTA') ? '#63e6a5' : trend.in
 </span>
 
 <br><br>
+<span style="color:white;">
 
+  Estrategia #1:
+
+</span><br>
+
+<strong style="color:${
+
+  strategy1Signals[symbol] === "VIGILAR 👀"
+
+    ? "#ffb84d"
+
+    : "#ffd166"
+
+};">
+
+  ${strategy1Signals[symbol] || "ANALIZANDO..."}
+
+</strong>
+
+<br><br>
 <span style="color:white;">
 
   Estrategia #2 — Cambio de tendencia a la baja:
