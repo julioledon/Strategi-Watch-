@@ -1106,7 +1106,7 @@ const m15Open =
 
 );
       
-      strategy4Signals[symbol] = strategy4Signal;
+w      strategy4Signals[symbol] = strategy4Signal;
       
       const response = await fetch(
 
@@ -1153,7 +1153,7 @@ const strategy5BandWidthPercent =
   price > strategy5UpperBand;
       const strategy5StartsDropping =
 
-  price < previousPrice;
+  price < previousClose;
       if (
 
   strategy5IsLateral &&
