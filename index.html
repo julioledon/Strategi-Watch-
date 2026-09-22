@@ -234,6 +234,7 @@
     JSON.parse(localStorage.getItem("strategiWatch")) || [];
   let strategy2Signals = {};
   let strategy3Signals = {};
+  let strategy4Signals = {};
   function save() {
     localStorage.setItem(
       "strategiWatch",
@@ -1003,7 +1004,51 @@ console.log(
       
 let strategy4Signal = "VIGILAR REBOTE 👀";
       
-      
+      // DATOS PARA ESTRATEGIA #4
+
+const dailyClose =
+
+  closes3Daily[closes3Daily.length - 1];
+
+const dailyMA20 =
+
+  closes3Daily.slice(-20)
+
+    .reduce((total, value) => total + value, 0) / 20;
+
+const h1Close =
+
+  closes3H1[closes3H1.length - 1];
+
+const h1MA20 =
+
+  closes3H1.slice(-20)
+
+    .reduce((total, value) => total + value, 0) / 20;
+
+const h1Open =
+
+  strategy3H1Quote.open[
+
+    strategy3H1Quote.open.length - 1
+
+  ];
+
+const m15Close =
+
+  strategy15Quote.close[
+
+    strategy15Quote.close.length - 1
+
+  ];
+
+const m15Open =
+
+  strategy15Quote.open[
+
+    strategy15Quote.open.length - 1
+
+  ];
       const dailyBullish4 =
         
 
