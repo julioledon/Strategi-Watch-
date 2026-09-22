@@ -1371,7 +1371,23 @@ Tendencia: <span style="color:${trend.includes('ALCISTA') ? '#63e6a5' : trend.in
 </strong>
 
 `; 
-    
+  <br><br>
+
+<strong>Estrategia #5:</strong>
+
+<strong style="color:${
+
+  strategy5Signals[symbol] === "PUT"
+
+    ? "#ff5c5c"
+
+    : "#ffd166"
+
+};">
+
+  ${strategy5Signals[symbol] || "ANALIZANDO ⏳"}
+
+</strong>  
 info.style.color = changePercent >= 0 ? "#63e6a5" : "#ff6b6b";
   } catch (error) {
 
