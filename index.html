@@ -1106,7 +1106,7 @@ const m15Open =
 
 );
       
-w      strategy4Signals[symbol] = strategy4Signal;
+    strategy4Signals[symbol] = strategy4Signal;
       
       const response = await fetch(
 
@@ -1127,17 +1127,47 @@ w      strategy4Signals[symbol] = strategy4Signal;
   result.meta.chartPreviousClose;
 
 
+      
+      const changePercent =
+        ((price - previousClose) / previousClose) * 100;
+
+        
         // =========================
 
 // ESTRATEGIA 5
 
 // =========================
 let strategy5Signal = "ESPERAR";
-      const strategy5UpperBand = upperBand;
+      
+      const strategy5Closes = closes3Daily.slice(-20);
 
+const middleBand =
+
+  strategy5Closes.reduce((sum, value) => sum + value, 0) /
+
+  strategy5Closes.length;
+
+const strategy5Variance =
+
+  strategy5Closes.reduce(
+
+    (sum, value) => sum + Math.pow(value - middleBand, 2),
+
+    0
+
+  ) / strategy5Closes.length;
+
+const strategy5StdDev = Math.sqrt(strategy5Variance);
+
+
+const upperBand = middleBand + (2 * strategy5StdDev);    
+const strategy5UpperBand = upperBand;
 const strategy5MiddleBand = middleBand;
-
+const lowerBand = middleBand - (2 * strategy5StdDev);
 const strategy5LowerBand = lowerBand;
+
+
+
       const strategy5BandWidth =
 
   strategy5UpperBand - strategy5LowerBand;
@@ -1170,11 +1200,8 @@ const strategy5BandWidthPercent =
       
       strategy5Signals[symbol] = strategy5Signal;
       
-      
-      const changePercent =
 
-        ((price - previousClose) / previousClose) * 100;
-
+        
       const sign = changePercent >= 0 ? "+" : "";
 
       const quote = document.getElementById(`quote-${symbol}`);
@@ -1373,7 +1400,7 @@ Tendencia: <span style="color:${trend.includes('ALCISTA') ? '#63e6a5' : trend.in
 
 </strong>
 
-`; 
+ 
   <br><br>
 
 <strong>Estrategia #5:</strong>
@@ -1391,6 +1418,9 @@ Tendencia: <span style="color:${trend.includes('ALCISTA') ? '#63e6a5' : trend.in
   ${strategy5Signals[symbol] || "ANALIZANDO ⏳"}
 
 </strong>  
+
+`;
+    
 info.style.color = changePercent >= 0 ? "#63e6a5" : "#ff6b6b";
   } catch (error) {
 
