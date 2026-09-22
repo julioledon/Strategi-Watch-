@@ -1108,6 +1108,25 @@ const m15Open =
       
       strategy4Signals[symbol] = strategy4Signal;
       
+      const response = await fetch(
+
+        `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`
+
+      );
+
+      const data = await response.json();
+
+      const result = data.chart.result[0];
+
+      const price = result.meta.regularMarketPrice;
+
+      const previousClose =
+
+  result.meta.previousClose ??
+
+  result.meta.chartPreviousClose;
+
+
         // =========================
 
 // ESTRATEGIA 5
@@ -1151,24 +1170,7 @@ const strategy5BandWidthPercent =
       
       strategy5Signals[symbol] = strategy5Signal;
       
-      const response = await fetch(
-
-        `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`
-
-      );
-
-      const data = await response.json();
-
-      const result = data.chart.result[0];
-
-      const price = result.meta.regularMarketPrice;
-
-      const previousClose =
-
-  result.meta.previousClose ??
-
-  result.meta.chartPreviousClose;
-
+      
       const changePercent =
 
         ((price - previousClose) / previousClose) * 100;
