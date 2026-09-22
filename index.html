@@ -238,6 +238,7 @@
   let strategy4Signals = {};
   let strategy5Signals = {};
   let strategy6Signals = {};
+  let strategy7Signals = {};
   function save() {
     localStorage.setItem(
       "strategiWatch",
@@ -1237,8 +1238,40 @@ let strategy6Signal = "ESPERAR";
 
       strategy6Signals[symbol] = strategy6Signal;
 
-      
 
+
+      
+      // =========================
+
+// ESTRATEGIA 7
+
+// =========================
+      let strategy7Signal = "ESPERAR";
+      const strategy7MA20 = prices.slice(-20).reduce((a, b) => a + b, 0) / 20;
+      const strategy7MA40 = prices.slice(-40).reduce((a, b) => a + b, 0) / 40;
+      const strategy7Downtrend = strategy7MA20 < strategy7MA40;
+      const strategy7FarBelowMA20 = price < strategy7MA20 * 0.98;
+      const strategy7OutsideLowerBand = price < lowerBand;
+      const strategy7StartsRecovering = price > previousPrice;
+      if (
+
+  strategy7Downtrend &&
+
+  strategy7FarBelowMA20 &&
+
+  strategy7OutsideLowerBand &&
+
+  strategy7StartsRecovering
+
+) {
+        strategy7Signal = "CALL";
+        
+   }
+     
+      strategy7Signals[symbol] = strategy7Signal;
+
+
+      
       
       const sign = changePercent >= 0 ? "+" : "";
 
@@ -1457,7 +1490,9 @@ Tendencia: <span style="color:${trend.includes('ALCISTA') ? '#63e6a5' : trend.in
   <br><br>Estrategia #6: 
   ${strategy6Signals[symbol] || "ANALIZANDO ⏳"}
 </strong>  
+<br><br>Estrategia #7:
 
+${strategy7Signals[symbol] || "ANALIZANDO ⏳"}
 `;
     
 info.style.color = changePercent >= 0 ? "#63e6a5" : "#ff6b6b";
