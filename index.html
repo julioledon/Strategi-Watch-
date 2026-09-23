@@ -485,7 +485,7 @@ const closes1H = strategyQuote.close.filter(
 
 );
 
-const recent1H = closes1H.slice(-6);
+const recent1H = closes1H.slice(-7, -1);
 
 let bearishStructure1H = false;
 
@@ -504,6 +504,7 @@ console.log("Estrategia #1 - cierres 1H:", recent1H);
 console.log("Estrategia #1 - estructura bajista:", bearishStructure1H);
 let strategy1Signal = "ESPERAR ⏳";
       let strategy1MA20 = null;
+      let strategy1PreviousMA20 = null;
 
 if (closes1H.length >= 20) {
 
@@ -513,6 +514,14 @@ if (closes1H.length >= 20) {
 
     last20Strategy1.reduce((total, value) => total + value, 0) / 20;
 
+if (closes1H.length >= 21) {
+
+  const previous20Strategy1 = closes1H.slice(-21, -1);
+
+  strategy1PreviousMA20 =
+
+    previous20Strategy1.reduce((total, value) => total + value, 0) / 20;
+  
 }
       let strategy1BreaksMA20Bullish = false;
 
@@ -540,7 +549,9 @@ if (
 
   strategy1BreaksMA20Bullish =
 
-    previousClose1H <= strategy1MA20 &&
+    strategy1MA20 !== null &&
+
+strategy1PreviousMA20 !== null &&
 
     currentClose1H > strategy1MA20 &&
 
