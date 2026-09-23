@@ -521,7 +521,7 @@ if (closes1H.length >= 21) {
   strategy1PreviousMA20 =
 
     previous20Strategy1.reduce((total, value) => total + value, 0) / 20;
-  
+}  
 }
       let strategy1BreaksMA20Bullish = false;
 
@@ -532,9 +532,8 @@ const strategy1Opens1H =
 if (
 
   strategy1MA20 !== null &&
-
+  strategy1PreviousMA20 !== null &&
   closes1H.length >= 2 &&
-
   strategy1Opens1H.length >= 1
 
 ) {
@@ -547,7 +546,7 @@ if (
 
     strategy1Opens1H[strategy1Opens1H.length - 1];
 
-strategy1BreaksMA20Bullish =
+    strategy1BreaksMA20Bullish =
 
     previousClose1H <= strategy1PreviousMA20 &&
 
