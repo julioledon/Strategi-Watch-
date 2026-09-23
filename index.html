@@ -646,7 +646,15 @@ const strategy1Lows15 =
 
   strategy1M15Quote.low.filter(value => value != null);
 
-if (strategy1Closes15.length >= 6) {
+if (
+
+  strategy1Closes15.length >= 6 &&
+
+  strategy1Highs15.length >= 6 &&
+
+  strategy1Lows15.length >= 6
+
+) {
 
   const strategy1Recent15 =
 
