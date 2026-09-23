@@ -239,6 +239,7 @@
   let strategy5Signals = {};
   let strategy6Signals = {};
   let strategy7Signals = {};
+  let strategy8Signals = {};
   function save() {
     localStorage.setItem(
       "strategiWatch",
@@ -1270,7 +1271,48 @@ let strategy6Signal = "ESPERAR";
      
       strategy7Signals[symbol] = strategy7Signal;
 
+      
+// =========================
 
+// ESTRATEGIA 8
+
+// =========================
+      let strategy8Signal = "ESPERAR";
+      const strategy8MA20 = ma20;
+      const strategy8MA50 = ma50;
+      const strategy8RSI = rsi;
+      const strategy8MACD = macd;
+      const strategy8MACDSignal = macdSignal;
+      const strategy8Volume = volume;
+      const strategy8AverageVolume = averageVolume;
+      const strategy8TrendUp = strategy8MA20 > strategy8MA50;
+      const strategy8TrendDown = strategy8MA20 < strategy8MA50;
+      const strategy8MomentumUp = strategy8RSI > 50;
+      const strategy8MomentumDown = strategy8RSI < 50;
+      const strategy8MACDBullish = strategy8MACD > strategy8MACDSignal;
+      const strategy8MACDBearish = strategy8MACD < strategy8MACDSignal;
+      const strategy8VolumeStrong = strategy8Volume > strategy8AverageVolume;
+      const strategy8CallSetup =
+      strategy8TrendUp &&
+      strategy8MomentumUp &&
+      strategy8MACDBullish &&
+      strategy8VolumeStrong;
+      const strategy8PutSetup =
+      strategy8TrendDown &&
+      strategy8MomentumDown &&
+      strategy8MACDBearish &&
+      strategy8VolumeStrong;
+      if (strategy8CallSetup) {
+      strategy8Signal = "CALL";
+    }
+      if (strategy8PutSetup) {
+          strategy8Signal = "PUT";
+        }
+        
+        strategy8Signals[symbol] = strategy8Signal;
+        
+      
+      
       
       
       const sign = changePercent >= 0 ? "+" : "";
@@ -1494,7 +1536,9 @@ Tendencia: <span style="color:${trend.includes('ALCISTA') ? '#63e6a5' : trend.in
 
 ${strategy7Signals[symbol] || "ANALIZANDO ⏳"}
 `;
-    
+    <br><br>Estrategia #8:
+    ${strategy8Signals[symbol] || "ANALIZANDO ⏳"}
+`;
 info.style.color = changePercent >= 0 ? "#63e6a5" : "#ff6b6b";
   } catch (error) {
 
