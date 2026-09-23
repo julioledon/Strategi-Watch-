@@ -1374,8 +1374,70 @@ if (closes3Daily.length >= 15) {
   }
 
 }
-      const strategy8MACD = 0;
-      const strategy8MACDSignal = 0;
+      let strategy8MACD = 0;
+
+let strategy8MACDSignal = 0;
+
+function calculateEMA(values, period) {
+
+  if (values.length < period) return null;
+
+  const multiplier = 2 / (period + 1);
+
+  let ema =
+
+    values.slice(0, period).reduce((a, b) => a + b, 0) / period;
+
+  for (let i = period; i < values.length; i++) {
+
+    ema = (values[i] - ema) * multiplier + ema;
+
+  }
+
+  return ema;
+
+}
+
+      const strategy8EMA12 = calculateEMA(closes3Daily, 12);
+
+const strategy8EMA26 = calculateEMA(closes3Daily, 26);
+
+if (strategy8EMA12 !== null && strategy8EMA26 !== null) {
+
+  strategy8MACD = strategy8EMA12 - strategy8EMA26;
+
+}
+
+      const strategy8MACDSeries = [];
+
+if (closes3Daily.length >= 35) {
+
+  for (let i = 26; i <= closes3Daily.length; i++) {
+
+    const partialCloses = closes3Daily.slice(0, i);
+
+    const ema12 = calculateEMA(partialCloses, 12);
+
+    const ema26 = calculateEMA(partialCloses, 26);
+
+    if (ema12 !== null && ema26 !== null) {
+
+      strategy8MACDSeries.push(ema12 - ema26);
+
+    }
+
+  }
+
+  const signalEMA = calculateEMA(strategy8MACDSeries, 9);
+
+  if (signalEMA !== null) {
+
+    strategy8MACDSignal = signalEMA;
+
+  }
+
+}
+    
       const strategy8Volume =
       strategy3DailyQuote.volume.filter(value => value != null).slice(-1)[0] || 0;
       const strategy8Volumes =
