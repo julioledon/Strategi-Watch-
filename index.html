@@ -241,6 +241,7 @@
   let strategy7Signals = {};
   let strategy8Signals = {};
   let strategy9Signals = {};
+  let strategy10Signals = {};
   function save() {
     localStorage.setItem(
       "strategiWatch",
@@ -1329,6 +1330,21 @@ let strategy6Signal = "ESPERAR";
 
       strategy9Signals[symbol] = strategy9Signal;
         
+
+      // ===== ESTRATEGIA 10 =====
+      let strategy10Signal = "WAIT";
+      const strategy10MomentumUp = rsi > 55;
+      const strategy10MomentumDown = rsi < 45;
+      const strategy10TrendUp = price > ema20 && ema20 > ema50;
+      const strategy10TrendDown = price < ema20 && ema20 < ema50;
+      if (strategy10MomentumUp && strategy10TrendUp) {
+        strategy10Signal = "BUY";
+        } else if (strategy10MomentumDown && strategy10TrendDown) {
+        strategy10Signal = "SELL";
+        }
+      
+      strategy10Signals[symbol] = strategy10Signal;
+
       
       
       const sign = changePercent >= 0 ? "+" : "";
@@ -1555,6 +1571,8 @@ ${strategy7Signals[symbol] || "ANALIZANDO ⏳"}
     ${strategy8Signals[symbol] || "ANALIZANDO ⏳"}
 <br><br>Estrategia #9:
 ${strategy9Signals[symbol] || "ANALIZANDO ⏳"}
+<br><br>Estrategia #10:
+${strategy10Signals[symbol] || "ANALIZANDO ⏳"}
 
 `;
     
