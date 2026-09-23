@@ -1225,8 +1225,10 @@ let strategy6Signal = "ESPERAR";
         strategy6BandWidthPercent <= 2;
       const strategy6TouchesLowerBand =
         price <= strategy6LowerBand;
+      const strategy6PreviousPrice = closes3Daily[closes3Daily.length - 2];
       const strategy6StartsRising =
-        price > previousPrice;
+        price > strategy6PreviousPrice;
+      
      if (
 
   strategy6IsLateral &&
