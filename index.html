@@ -1259,7 +1259,7 @@ let strategy6Signal = "ESPERAR";
       const strategy7Downtrend = strategy7MA20 < strategy7MA40;
       const strategy7FarBelowMA20 = price < strategy7MA20 * 0.98;
       const strategy7OutsideLowerBand = price < lowerBand;
-      const strategy7StartsRecovering = price > previousPrice;
+      const strategy7StartsRecovering = price > previousClose
       if (
 
   strategy7Downtrend &&
@@ -1399,9 +1399,10 @@ let strategy6Signal = "ESPERAR";
       // ===== ESTRATEGIA 12 =====
 
 let strategy12Signal = "ANALIZANDO ⏳";
-      const strategy12Price = quote.price;
-      const strategy12Change = quote.changePercent;
-      const strategy12Volume = quote.volume;
+      const strategy12Price = price;
+      const strategy12Change = changePercent;
+      const strategy12Volume =
+      strategy3DailyQuote.volume.filter(value => value != null).slice(-1)[0] || 0;
       const strategy12Bullish = strategy12Change > 0;
       const strategy12Bearish = strategy12Change < 0;
       const strategy12StrongMove = Math.abs(strategy12Change) >= 1;
