@@ -728,7 +728,155 @@ console.log(
 // ===============================
 
 const strategy15Url =
+// DATOS 1 HORA - ESTRATEGIA #2
 
+const strategy2H1Url =
+
+  `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=1h&range=1mo`;
+
+const strategy2H1Response = await fetch(
+
+  `https://api.allorigins.win/raw?url=${encodeURIComponent(strategy2H1Url)}`
+
+);
+
+const strategy2H1Data = await strategy2H1Response.json();
+
+const strategy2H1Result = strategy2H1Data.chart.result[0];
+
+const strategy2H1Quote =
+
+  strategy2H1Result.indicators.quote[0];
+
+const strategy2Closes1H =
+strategy2H1Quote.close.filter(value => value != null);
+      let strategy2MA20H1 = null;
+
+let strategy2PreviousMA20H1 = null;
+
+if (strategy2Closes1H.length >= 20) {
+
+  const last20Strategy2H1 =
+
+    strategy2Closes1H.slice(-20);
+
+  strategy2MA20H1 =
+
+    last20Strategy2H1.reduce(
+
+      (total, value) => total + value,
+
+      0
+
+    ) / 20;
+
+  if (strategy2Closes1H.length >= 21) {
+
+    const previous20Strategy2H1 =
+
+      strategy2Closes1H.slice(-21, -1);
+
+    strategy2PreviousMA20H1 =
+
+      previous20Strategy2H1.reduce(
+
+        (total, value) => total + value,
+
+        0
+
+      ) / 20;
+
+  }
+
+}
+      let strategy2BreaksMA20H1 = false;
+
+const strategy2Opens1H =
+
+  strategy2H1Quote.open.filter(value => value != null);
+
+if (
+
+  strategy2MA20H1 !== null &&
+
+  strategy2PreviousMA20H1 !== null &&
+
+  strategy2Closes1H.length >= 2 &&
+
+  strategy2Opens1H.length >= 1
+
+) {
+
+  const currentClose2H1 =
+
+    strategy2Closes1H[strategy2Closes1H.length - 1];
+
+  const previousClose2H1 =
+
+    strategy2Closes1H[strategy2Closes1H.length - 2];
+
+  const currentOpen2H1 =
+
+    strategy2Opens1H[strategy2Opens1H.length - 1];
+
+  strategy2BreaksMA20H1 =
+
+    previousClose2H1 >= strategy2PreviousMA20H1 &&
+
+    currentClose2H1 < strategy2MA20H1 &&
+
+    currentClose2H1 < currentOpen2H1;
+
+}
+      let strategy2BreaksUptrendH1 = false;
+
+const strategy2Lows1H =
+
+  strategy2H1Quote.low.filter(value => value != null);
+
+const strategy2RecentLows1H =
+
+  strategy2Lows1H.slice(-7, -1);
+
+if (
+
+  strategy2RecentLows1H.length >= 6 &&
+
+  strategy2Closes1H.length > 0
+
+) {
+
+  const strategy2HadUptrendH1 =
+
+    strategy2RecentLows1H[1] > strategy2RecentLows1H[0] &&
+
+    strategy2RecentLows1H[2] > strategy2RecentLows1H[1] &&
+
+    strategy2RecentLows1H[3] > strategy2RecentLows1H[2] &&
+
+    strategy2RecentLows1H[4] > strategy2RecentLows1H[3] &&
+
+    strategy2RecentLows1H[5] > strategy2RecentLows1H[4];
+
+  const strategy2TrendSlope =
+
+    (strategy2RecentLows1H[5] - strategy2RecentLows1H[0]) / 5;
+
+  const strategy2TrendLineLevel =
+
+    strategy2RecentLows1H[5] + strategy2TrendSlope;
+
+  const strategy2CurrentCloseH1 =
+
+    strategy2Closes1H[strategy2Closes1H.length - 1];
+
+  strategy2BreaksUptrendH1 =
+
+    strategy2HadUptrendH1 &&
+
+    strategy2CurrentCloseH1 < strategy2TrendLineLevel;
+
+}
   `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=15m&range=5d`;
 
 const strategy15Response = await fetch(
@@ -820,21 +968,43 @@ console.log(
 );
       // Confirmar estructura bajista en 15 minutos
 
-const recent15 = closes15.slice(-6);
+const strategy2Highs15 =
+
+  strategy15Quote.high.filter(value => value != null);
+
+const strategy2Lows15Confirm =
+
+  strategy15Quote.low.filter(value => value != null);
 
 let bearishStructure15 = false;
 
-if (recent15.length >= 6) {
+if (
+
+  strategy2Highs15.length >= 6 &&
+
+  strategy2Lows15Confirm.length >= 6
+
+) {
+
+  const recentHighs15 =
+
+    strategy2Highs15.slice(-6);
+
+  const recentLows15Confirm =
+
+    strategy2Lows15Confirm.slice(-6);
 
   bearishStructure15 =
 
-    recent15[5] < recent15[3] &&
+    recentHighs15[5] < recentHighs15[3] &&
 
-    recent15[3] < recent15[1];
+    recentHighs15[3] < recentHighs15[1] &&
+
+    recentLows15Confirm[5] < recentLows15Confirm[3] &&
+
+    recentLows15Confirm[3] < recentLows15Confirm[1];
 
 }
-
-console.log(
 
   "Estrategia #2 - estructura bajista 15M:",
 
@@ -895,15 +1065,15 @@ let strategy2Signal = "ESPERAR ⏳";
 
 if (
 
-  breaksUptrendLine &&
+  strategy2BreaksUptrendH1 &&
 
-  breaksMA20Bearish &&
+  strategy2BreaksMA20H1 &&
 
   bearishStructure15
 
 ) {
 
-  strategy2Signal = "PUT 🔴";
+  strategy2Signal = "PUT";
 
 }
       
@@ -1993,7 +2163,7 @@ Tendencia: <span style="color:${trend.includes('ALCISTA') ? '#63e6a5' : trend.in
 
 <strong style="color:${
 
-  strategy2Signals[symbol] === "PUT 🔴"
+  strategy2Signals[symbol] === "PUT"
 
     ? "#ff5c5c"
 
