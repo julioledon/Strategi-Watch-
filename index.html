@@ -1535,10 +1535,11 @@ Tendencia: <span style="color:${trend.includes('ALCISTA') ? '#63e6a5' : trend.in
 <br><br>Estrategia #7:
 
 ${strategy7Signals[symbol] || "ANALIZANDO ⏳"}
-`;
-    <br><br>Estrategia #8:
+<br><br>Estrategia #8:
     ${strategy8Signals[symbol] || "ANALIZANDO ⏳"}
+
 `;
+    
 
 info.style.color = changePercent >= 0 ? "#63e6a5" : "#ff6b6b";
   } catch (error) {
