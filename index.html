@@ -1114,6 +1114,44 @@ const m15Open =
 );
       
     strategy4Signals[symbol] = strategy4Signal;
+
+      const quickResponse = await fetch(
+
+  `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`
+
+);
+
+const quickData = await quickResponse.json();
+
+const quickResult = quickData.chart.result[0];
+
+const quickPrice = quickResult.meta.regularMarketPrice;
+
+const quickPreviousClose =
+
+  quickResult.meta.previousClose ??
+
+  quickResult.meta.chartPreviousClose;
+
+const quickChangePercent =
+
+  ((quickPrice - quickPreviousClose) / quickPreviousClose) * 100;
+
+const quickSign = quickChangePercent >= 0 ? "+" : "";
+
+const quickQuote = document.getElementById(`quote-${symbol}`);
+
+if (quickQuote) {
+
+  quickQuote.textContent =
+
+    `$${quickPrice}  ${quickSign}${quickChangePercent.toFixed(2)}%`;
+
+  quickQuote.style.color =
+
+    quickChangePercent >= 0 ? "#63e6a5" : "#ff6b6b";
+
+}
       
       const response = await fetch(
 
