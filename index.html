@@ -638,6 +638,13 @@ const strategy1Closes15 =
 
   strategy1M15Quote.close.filter(value => value != null);
       let strategy1Bullish15 = false;
+      const strategy1Highs15 =
+
+  strategy1M15Quote.high.filter(value => value != null);
+
+const strategy1Lows15 =
+
+  strategy1M15Quote.low.filter(value => value != null);
 
 if (strategy1Closes15.length >= 6) {
 
@@ -645,11 +652,27 @@ if (strategy1Closes15.length >= 6) {
 
     strategy1Closes15.slice(-6);
 
-  strategy1Bullish15 =
+  const strategy1RecentHighs15 =
 
-    strategy1Recent15[5] > strategy1Recent15[3] &&
+  strategy1Highs15.slice(-6);
 
-    strategy1Recent15[3] > strategy1Recent15[1];
+const strategy1RecentLows15 =
+
+  strategy1Lows15.slice(-6);
+
+strategy1Bullish15 =
+
+  strategy1RecentHighs15[5] > strategy1RecentHighs15[3] &&
+
+  strategy1RecentHighs15[3] > strategy1RecentHighs15[1] &&
+
+  strategy1RecentLows15[5] > strategy1RecentLows15[3] &&
+
+  strategy1RecentLows15[3] > strategy1RecentLows15[1];
+
+    
+
+    
 
 }
 
