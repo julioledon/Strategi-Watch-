@@ -503,10 +503,162 @@ console.log("Estrategia #1 - cierres 1H:", recent1H);
 
 console.log("Estrategia #1 - estructura bajista:", bearishStructure1H);
 let strategy1Signal = "ESPERAR ⏳";
+      let strategy1MA20 = null;
+
+if (closes1H.length >= 20) {
+
+  const last20Strategy1 = closes1H.slice(-20);
+
+  strategy1MA20 =
+
+    last20Strategy1.reduce((total, value) => total + value, 0) / 20;
+
+}
+      let strategy1BreaksMA20Bullish = false;
+
+const strategy1Opens1H =
+
+  strategyQuote.open.filter(value => value != null);
+
+if (
+
+  strategy1MA20 !== null &&
+
+  closes1H.length >= 2 &&
+
+  strategy1Opens1H.length >= 1
+
+) {
+
+  const currentClose1H = closes1H[closes1H.length - 1];
+
+  const previousClose1H = closes1H[closes1H.length - 2];
+
+  const currentOpen1H =
+
+    strategy1Opens1H[strategy1Opens1H.length - 1];
+
+  strategy1BreaksMA20Bullish =
+
+    previousClose1H <= strategy1MA20 &&
+
+    currentClose1H > strategy1MA20 &&
+
+    currentClose1H > currentOpen1H;
+
+}
+      let strategy1BreaksDowntrend = false;
+
+const strategy1Highs1H =
+
+  strategyQuote.high.filter(value => value != null);
+
+const strategy1RecentHighs =
+
+  strategy1Highs1H.slice(-6);
+
+if (
+
+  strategy1RecentHighs.length >= 6 &&
+
+  closes1H.length > 0
+
+) {
+
+  const hadDowntrend =
+
+    strategy1RecentHighs[1] < strategy1RecentHighs[0] &&
+
+    strategy1RecentHighs[2] < strategy1RecentHighs[1] &&
+
+    strategy1RecentHighs[3] < strategy1RecentHighs[2];
+
+  const trendLineLevel =
+
+    strategy1RecentHighs[3];
+
+  const currentClose1H =
+
+    closes1H[closes1H.length - 1];
+
+  strategy1BreaksDowntrend =
+
+    hadDowntrend &&
+
+    currentClose1H > trendLineLevel;
+
+}
+      let strategy1Bullish15 = false;
+
+if (closes15.length >= 6) {
+
+  const strategy1Recent15 = closes15.slice(-6);
+
+  strategy1Bullish15 =
+
+    strategy1Recent15[5] > strategy1Recent15[3] &&
+
+    strategy1Recent15[3] > strategy1Recent15[1];
+
+}
+      const strategy1M15Url =
+
+  `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=15m&range=5d`;
+
+const strategy1M15Response = await fetch(
+
+  `https://api.allorigins.win/raw?url=${encodeURIComponent(strategy1M15Url)}`
+
+);
+
+const strategy1M15Data = await strategy1M15Response.json();
+
+const strategy1M15Result = strategy1M15Data.chart.result[0];
+
+const strategy1M15Quote =
+
+  strategy1M15Result.indicators.quote[0];
+
+const strategy1Closes15 =
+
+  strategy1M15Quote.close.filter(value => value != null);
+      let strategy1Bullish15 = false;
+
+if (strategy1Closes15.length >= 6) {
+
+  const strategy1Recent15 =
+
+    strategy1Closes15.slice(-6);
+
+  strategy1Bullish15 =
+
+    strategy1Recent15[5] > strategy1Recent15[3] &&
+
+    strategy1Recent15[3] > strategy1Recent15[1];
+
+}
 
 if (bearishStructure1H) {
 
   strategy1Signal = "VIGILAR 👀";
+
+}
+
+if (
+
+  strategy1BreaksDowntrend &&
+
+  strategy1BreaksMA20Bullish &&
+
+  strategy1Bullish15
+
+) {
+
+  strategy1Signal = "CALL";
+
+}
+
+  
 
 }
 
@@ -1563,7 +1715,75 @@ let strategy12Signal = "ANALIZANDO ⏳";
 
 strategy12Signals[symbol] = strategy12Signal;
 
+      
 
+const todasLasSenales = [
+
+  strategy1Signal,
+
+  strategy2Signal,
+
+  strategy3Signal,
+
+  strategy4Signal,
+
+  strategy5Signal,
+
+  strategy6Signal,
+
+  strategy7Signal,
+
+  strategy8Signal,
+
+  strategy9Signal,
+
+  strategy10Signal,
+
+  strategy11Signal,
+
+  strategy12Signal
+
+];
+
+todasLasSenales.forEach((signal, index) => {
+
+  const entradasValidas = [
+
+    "CALL",
+
+    "PUT",
+
+    "BUY",
+
+    "SELL",
+
+    "STRONG CALL",
+
+    "STRONG PUT"
+
+  ];
+
+  const strategy = "Estrategia #" + (index + 1);
+
+  const alertaKey = "alerta_" + (index + 1) + "_" + symbol;
+
+  const alertaAnterior = localStorage.getItem(alertaKey);
+
+  if (entradasValidas.includes(signal) && signal !== alertaAnterior) {
+
+    enviarAlerta(strategy, symbol, signal, price);
+
+    localStorage.setItem(alertaKey, signal);
+
+  }
+
+  if (!entradasValidas.includes(signal)) {
+
+    localStorage.removeItem(alertaKey);
+
+  }
+
+});
 
       
 
@@ -1847,6 +2067,49 @@ setInterval(() => {
 
 }, 60000);
 </script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>
+ emailjs.init("sORvJqN2guPjLzAci");
+</script>
+  <script>
 
+async function enviarAlerta(strategy, symbol, signal, price) {
+
+  try {
+
+    await emailjs.send(
+
+      "service_zkajjbi",
+
+      "template_wnjxzig",
+
+      {
+
+        strategy: strategy,
+
+        symbol: symbol,
+
+        signal: signal,
+
+        price: price,
+
+        time: new Date().toLocaleString()
+
+      }
+
+    );
+
+    console.log("Alerta enviada:", strategy, signal);
+
+  } catch (error) {
+
+    console.error("Error enviando alerta:", error);
+
+  }
+
+}
+
+</script>
+  
 </body>
 </html>
