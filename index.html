@@ -547,11 +547,9 @@ if (
 
     strategy1Opens1H[strategy1Opens1H.length - 1];
 
-  strategy1BreaksMA20Bullish =
+strategy1BreaksMA20Bullish =
 
-    strategy1MA20 !== null &&
-
-strategy1PreviousMA20 !== null &&
+    previousClose1H <= strategy1PreviousMA20 &&
 
     currentClose1H > strategy1MA20 &&
 
@@ -566,7 +564,9 @@ const strategy1Highs1H =
 
 const strategy1RecentHighs =
 
-  strategy1Highs1H.slice(-6);
+  strategy1Highs1H.slice(-7, -1);
+
+  
 
 if (
 
@@ -578,15 +578,27 @@ if (
 
   const hadDowntrend =
 
-    strategy1RecentHighs[1] < strategy1RecentHighs[0] &&
+  strategy1RecentHighs[1] < strategy1RecentHighs[0] &&
 
-    strategy1RecentHighs[2] < strategy1RecentHighs[1] &&
+  strategy1RecentHighs[2] < strategy1RecentHighs[1] &&
 
-    strategy1RecentHighs[3] < strategy1RecentHighs[2];
+  strategy1RecentHighs[3] < strategy1RecentHighs[2] &&
 
-  const trendLineLevel =
+  strategy1RecentHighs[4] < strategy1RecentHighs[3] &&
 
-    strategy1RecentHighs[3];
+  strategy1RecentHighs[5] < strategy1RecentHighs[4];
+
+    
+
+  const trendSlope =
+
+  (strategy1RecentHighs[5] - strategy1RecentHighs[0]) / 5;
+
+const trendLineLevel =
+
+  strategy1RecentHighs[5] + trendSlope;
+
+    
 
   const currentClose1H =
 
