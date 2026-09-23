@@ -1395,6 +1395,30 @@ let strategy6Signal = "ESPERAR";
 
       strategy11Signals[symbol] = strategy11Signal;
 
+
+      // ===== ESTRATEGIA 12 =====
+
+let strategy12Signal = "ANALIZANDO ⏳";
+      const strategy12Price = quote.price;
+      const strategy12Change = quote.changePercent;
+      const strategy12Volume = quote.volume;
+      const strategy12Bullish = strategy12Change > 0;
+      const strategy12Bearish = strategy12Change < 0;
+      const strategy12StrongMove = Math.abs(strategy12Change) >= 1;
+      if (strategy12Bullish && strategy12StrongMove) {
+        strategy12Signal = "STRONG CALL";
+        }
+      if (strategy12Bearish && strategy12StrongMove) {
+        strategy12Signal = "STRONG PUT";
+        }
+
+
+strategy12Signals[symbol] = strategy12Signal;
+
+
+
+      
+
       const sign = changePercent >= 0 ? "+" : "";
 
       const quote = document.getElementById(`quote-${symbol}`);
