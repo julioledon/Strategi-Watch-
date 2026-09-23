@@ -1345,9 +1345,30 @@ let strategy6Signal = "ESPERAR";
       
       strategy10Signals[symbol] = strategy10Signal;
 
+
       
-      
+      // ===== ESTRATEGIA 11 =====
+      let strategy11Signal = "WAIT";
+      const strategy11MomentumUp = rsi > 50;
+      const strategy11MomentumDown = rsi < 50;
+      const strategy11Bullish = price > ma20 && ma20 > ma40;
+      const strategy11Bearish = price < ma20 && ma20 < ma40;
+      const strategy11LongTermUp = ma40 > ma100 && ma100 > ma200;
+      const strategy11LongTermDown = ma40 < ma100 && ma100 < ma200;
+      const strategy11Volatility = bbUpper > bbLower;
+      const strategy11BreakoutUp = price > bbUpper;
+      const strategy11BreakoutDown = price < bbLower;
+      if (strategy11Bullish && strategy11LongTermUp && strategy11MomentumUp && strategy11Volatility && strategy11BreakoutUp) {
+      strategy11Signal = "STRONG CALL";
+        }
+      if (strategy11Bearish && strategy11LongTermDown && strategy11MomentumDown && strategy11Volatility && strategy11BreakoutDown) {
       const sign = changePercent >= 0 ? "+" : "";
+        strategy11Signal = "STRONG PUT";
+        }
+
+      strategy11Signals[symbol] = strategy11Signal;
+
+      
 
       const quote = document.getElementById(`quote-${symbol}`);
 
@@ -1573,6 +1594,8 @@ ${strategy7Signals[symbol] || "ANALIZANDO ⏳"}
 ${strategy9Signals[symbol] || "ANALIZANDO ⏳"}
 <br><br>Estrategia #10:
 ${strategy10Signals[symbol] || "ANALIZANDO ⏳"}
+<br><br>Estrategia #11:
+${strategy11Signals[symbol] || "ANALIZANDO ⏳"}
 
 `;
     
