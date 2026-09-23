@@ -588,19 +588,12 @@ if (
     currentClose1H > trendLineLevel;
 
 }
-      let strategy1Bullish15 = false;
+      
 
-if (closes15.length >= 6) {
 
-  const strategy1Recent15 = closes15.slice(-6);
+    
 
-  strategy1Bullish15 =
 
-    strategy1Recent15[5] > strategy1Recent15[3] &&
-
-    strategy1Recent15[3] > strategy1Recent15[1];
-
-}
       const strategy1M15Url =
 
   `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=15m&range=5d`;
@@ -656,7 +649,7 @@ if (
 
   strategy1Signal = "CALL";
 
-}
+
 
   
 
