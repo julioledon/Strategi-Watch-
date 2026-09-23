@@ -1390,8 +1390,7 @@ let strategy6Signal = "ESPERAR";
       strategy11Signal = "STRONG CALL";
         }
       if (strategy11Bearish && strategy11LongTermDown && strategy11MomentumDown && strategy11Volatility && strategy11BreakoutDown) {
-      const sign = changePercent >= 0 ? "+" : "";
-        strategy11Signal = "STRONG PUT";
+       strategy11Signal = "STRONG PUT";
         }
 
       strategy11Signals[symbol] = strategy11Signal;
