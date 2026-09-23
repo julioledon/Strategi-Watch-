@@ -1459,8 +1459,7 @@ document.getElementById("lastUpdate").textContent =
 }
   
   async function loadStockData(symbol) {
-if (window._loading) return;
-window._loading = true;
+
     
   const info = document.getElementById("assetInfo");
 
@@ -1658,11 +1657,11 @@ ${strategy12Signals[symbol] || "ANALIZANDO ⏳"}
 
 info.style.color = changePercent >= 0 ? "#63e6a5" : "#ff6b6b";
     
-  window._loading = false;
+
     
   } catch (error) {
     
-  window._loading = false;
+  
     
   info.textContent = "ERROR: " + error.message;
 
