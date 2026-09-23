@@ -1331,7 +1331,49 @@ let strategy6Signal = "ESPERAR";
       const strategy8MA50 =
       closes3Daily.slice(-50).reduce((a, b) => a + b, 0) /
       Math.min(closes3Daily.length, 50);
-      const strategy8RSI = 50;
+      let strategy8RSI = 50;
+
+if (closes3Daily.length >= 15) {
+
+  const rsiCloses = closes3Daily.slice(-15);
+
+  let gains = 0;
+
+  let losses = 0;
+
+  for (let i = 1; i < rsiCloses.length; i++) {
+
+    const difference = rsiCloses[i] - rsiCloses[i - 1];
+
+    if (difference > 0) {
+
+      gains += difference;
+
+    } else {
+
+      losses += Math.abs(difference);
+
+    }
+
+  }
+
+  const averageGain = gains / 14;
+
+  const averageLoss = losses / 14;
+
+  if (averageLoss === 0) {
+
+    strategy8RSI = 100;
+
+  } else {
+
+    const rs = averageGain / averageLoss;
+
+    strategy8RSI = 100 - (100 / (1 + rs));
+
+  }
+
+}
       const strategy8MACD = 0;
       const strategy8MACDSignal = 0;
       const strategy8Volume =
