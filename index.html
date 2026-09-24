@@ -2687,22 +2687,238 @@ strategy8Signals[symbol] = strategy8Signal;
       
 
       // ===== ESTRATEGIA9 =====
-      let strategy9Signal = "ESPERAR";
-      const strategy9MomentumUp = false;
-      const strategy9MomentumDown = false;
-      
-      const strategy9TrendUp = price > strategy7MA20;
-      const strategy9TrendDown = price < strategy7MA20;
-      const strategy9Buy = strategy9MomentumUp && strategy9TrendUp;
-      const strategy9Sell = strategy9MomentumDown && strategy9TrendDown;
-      if (strategy9Buy) {
-        strategy9Signal = "BUY";
-        } else if (strategy9Sell) {
-        strategy9Signal = "SELL";
-        }
+   let strategy9Signal = "ESPERAR";
 
-      strategy9Signals[symbol] = strategy9Signal;
-        
+const strategy9Closes15 =
+
+  strategy15Quote.close.filter(value => value != null);
+
+const strategy9Highs15 =
+
+  strategy15Quote.high.filter(value => value != null);
+
+const strategy9Lows15 =
+
+  strategy15Quote.low.filter(value => value != null);
+
+      const strategy9ClosedCloses15 =
+
+  strategy9Closes15.slice(0, -1);
+
+const strategy9ClosedHighs15 =
+
+  strategy9Highs15.slice(0, -1);
+
+const strategy9ClosedLows15 =
+
+  strategy9Lows15.slice(0, -1);
+
+
+      let strategy9MiddleBand = null;
+
+if (strategy9ClosedCloses15.length >= 20) {
+
+  const strategy9Last20 =
+
+    strategy9ClosedCloses15.slice(-20);
+
+  strategy9MiddleBand =
+
+    strategy9Last20.reduce(
+
+      (sum, value) => sum + value,
+
+      0
+
+    ) / 20;
+
+}
+      let strategy9PreviousMiddleBand = null;
+
+if (strategy9ClosedCloses15.length >= 21) {
+
+  const strategy9Previous20 =
+
+    strategy9ClosedCloses15.slice(-21, -1);
+
+  strategy9PreviousMiddleBand =
+
+    strategy9Previous20.reduce(
+
+      (sum, value) => sum + value,
+
+      0
+
+    ) / 20;
+
+}
+      let strategy9BreaksMiddleBand = false;
+
+if (
+
+  strategy9MiddleBand !== null &&
+
+  strategy9PreviousMiddleBand !== null &&
+
+  strategy9ClosedCloses15.length >= 2
+
+) {
+
+  const strategy9CurrentClose =
+
+    strategy9ClosedCloses15[
+
+      strategy9ClosedCloses15.length - 1
+
+    ];
+
+  const strategy9PreviousClose =
+
+    strategy9ClosedCloses15[
+
+      strategy9ClosedCloses15.length - 2
+
+    ];
+
+  strategy9BreaksMiddleBand =
+
+    strategy9PreviousClose <= strategy9PreviousMiddleBand &&
+
+    strategy9CurrentClose > strategy9MiddleBand;
+
+}
+      let strategy9Downtrend = false;
+
+if (
+
+  strategy9ClosedHighs15.length >= 6 &&
+
+  strategy9ClosedLows15.length >= 6
+
+) {
+
+  const strategy9RecentHighs =
+
+    strategy9ClosedHighs15.slice(-6);
+
+  const strategy9RecentLows =
+
+    strategy9ClosedLows15.slice(-6);
+
+  strategy9Downtrend =
+
+    strategy9RecentHighs[3] < strategy9RecentHighs[1] &&
+
+    strategy9RecentLows[3] < strategy9RecentLows[1];
+
+}
+      let strategy9BreaksDowntrend = false;
+
+if (
+
+  strategy9ClosedHighs15.length >= 6 &&
+
+  strategy9ClosedCloses15.length >= 1
+
+) {
+
+  const strategy9TrendHighs =
+
+    strategy9ClosedHighs15.slice(-6);
+
+  const strategy9TrendSlope =
+
+    (strategy9TrendHighs[4] - strategy9TrendHighs[0]) / 4;
+
+  const strategy9TrendLine =
+
+    strategy9TrendHighs[4] + strategy9TrendSlope;
+
+  const strategy9LastClose =
+
+    strategy9ClosedCloses15[
+
+      strategy9ClosedCloses15.length - 1
+
+    ];
+
+  strategy9BreaksDowntrend =
+
+    strategy9Downtrend &&
+
+    strategy9LastClose > strategy9TrendLine;
+
+}
+      let strategy9VolatilityExpanding = false;
+
+if (strategy9ClosedCloses15.length >= 21) {
+
+  const current20 =
+
+    strategy9ClosedCloses15.slice(-20);
+
+  const previous20 =
+
+    strategy9ClosedCloses15.slice(-21, -1);
+
+  const currentMean =
+
+    current20.reduce((a, b) => a + b, 0) / 20;
+
+  const previousMean =
+
+    previous20.reduce((a, b) => a + b, 0) / 20;
+
+  const currentStd =
+
+    Math.sqrt(
+
+      current20.reduce(
+
+        (sum, value) => sum + Math.pow(value - currentMean, 2),
+
+        0
+
+      ) / 20
+
+    );
+
+  const previousStd =
+
+    Math.sqrt(
+
+      previous20.reduce(
+
+        (sum, value) => sum + Math.pow(value - previousMean, 2),
+
+        0
+
+      ) / 20
+
+    );
+
+  strategy9VolatilityExpanding =
+
+    currentStd > previousStd;
+
+}
+      if (
+
+  strategy9Downtrend &&
+
+  strategy9BreaksDowntrend &&
+
+  strategy9BreaksMiddleBand &&
+
+  strategy9VolatilityExpanding
+
+) {
+
+  strategy9Signal = "CALL";
+
+}
+
+strategy9Signals[symbol] = strategy9Signal;
 
       // ===== ESTRATEGIA 10 =====
       let strategy10Signal = "ESPERAR";
