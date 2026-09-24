@@ -1,4 +1,4 @@
-<! html>
+j<! html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
@@ -1790,7 +1790,87 @@ if (
 // =========================
 let strategy5Signal = "ESPERAR";
       
-      const strategy5Closes = closes3Daily.slice(-20);
+      const strategy5AllCloses =
+
+  strategy15Quote.close.filter(value => value != null);
+
+const strategy5AllCloses =
+
+  strategy15Quote.close.filter(value => value != null);
+
+const strategy5Timestamps =
+
+  strategy15Result.timestamp || [];
+
+const strategy5TodayNY =
+
+  new Date().toLocaleDateString("en-CA", {
+
+    timeZone: "America/New_York"
+
+  });
+
+const strategy5MarketOpenIndex =
+
+  strategy5Timestamps.findIndex(timestamp => {
+
+    const candleDateNY =
+
+      new Date(timestamp * 1000).toLocaleDateString("en-CA", {
+
+        timeZone: "America/New_York"
+
+      });
+
+    const candleTimeNY =
+
+      new Date(timestamp * 1000).toLocaleTimeString("en-US", {
+
+        timeZone: "America/New_York",
+
+        hour12: false,
+
+        hour: "2-digit",
+
+        minute: "2-digit"
+
+      });
+
+    return (
+
+      candleDateNY === strategy5TodayNY &&
+
+      candleTimeNY === "09:30"
+
+    );
+
+  });
+
+const strategy5Closes =
+
+  strategy5MarketOpenIndex >= 20
+
+    ? strategy15Quote.close
+
+        .slice(
+
+          strategy5MarketOpenIndex - 20,
+
+          strategy5MarketOpenIndex
+
+        )
+
+        .filter(value => value != null)
+
+    : [];
+
+      if (strategy5Closes.length < 20) {
+
+  strategy5Signals[symbol] = "ESPERAR";
+
+  continue;
+
+}
 
 const middleBand =
 
@@ -1826,22 +1906,103 @@ const strategy5LowerBand = lowerBand;
 const strategy5BandWidthPercent =
 
   (strategy5BandWidth / strategy5MiddleBand) * 100;
+
+      const strategy5PreviousMiddleBand =
+
+  strategy5Closes.slice(0, -1)
+
+    .reduce((sum, value) => sum + value, 0) /
+
+  (strategy5Closes.length - 1);
+
+const strategy5MiddleSlopePercent =
+
+  Math.abs(
+
+    (strategy5MiddleBand - strategy5PreviousMiddleBand) /
+
+    strategy5PreviousMiddleBand
+
+  ) * 100;
+
       const strategy5IsLateral =
 
-  strategy5BandWidthPercent <= 2;
+  strategy5BandWidthPercent <= 2 &&
+
+  strategy5MiddleSlopePercent <= 0.10;
+
+
+
+     
+      const strategy5Open15 =
+
+  strategy5MarketOpenIndex !== -1
+
+    ? strategy15Quote.open[strategy5MarketOpenIndex]
+
+    : null;
+
+const strategy5PreviousClose =
+
+  strategy5MarketOpenIndex > 0
+
+    ? strategy15Quote.close[strategy5MarketOpenIndex - 1]
+
+    : null;
+
+      
       const strategy5GapAboveUpper =
 
-  price > strategy5UpperBand;
+  strategy5Open15 !== null &&
+
+  strategy5PreviousClose !== null &&
+
+  strategy5Open15 > strategy5UpperBand &&
+
+  strategy5Open15 > strategy5PreviousClose;
+
+  
       const strategy5StartsDropping =
 
-  price < previousClose;
+  strategy5Open15 !== null &&
+
+  price < strategy5Open15;
+
+      const strategy5NowNY =
+
+  new Date(
+
+    new Date().toLocaleString("en-US", {
+
+      timeZone: "America/New_York"
+
+    })
+
+  );
+
+const strategy5Minutes =
+
+  strategy5NowNY.getHours() * 60 +
+
+  strategy5NowNY.getMinutes();
+
+const strategy5First5Minutes =
+
+  strategy5Minutes >= (9 * 60 + 30) &&
+
+  strategy5Minutes < (9 * 60 + 35);
+
+  
+
       if (
 
   strategy5IsLateral &&
 
   strategy5GapAboveUpper &&
 
-  strategy5StartsDropping
+  strategy5StartsDropping &&
+
+  strategy5First5Minutes
 
 ) {
 
