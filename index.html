@@ -2252,15 +2252,196 @@ const strategy6First5Minutes =
 
 // =========================
       let strategy7Signal = "ESPERAR";
-      const strategy7MA20 = closes3Daily.slice(-20).reduce((a, b) => a + b, 0) / 20;
-      const strategy7MA40 = closes3Daily.slice(-40).reduce((a, b) => a + b, 0) / 40;
-      const strategy7Downtrend = strategy7MA20 < strategy7MA40;
-      const strategy7FarBelowMA20 = price < strategy7MA20 * 0.98;
-      const strategy7OutsideLowerBand = price < lowerBand;
-      const strategy7StartsRecovering = price > previousClose
+      const strategy7HourCloses =
+
+  strategy1HQuote.close.filter(value => value != null);
+      if (strategy7HourCloses.length < 40) {
+
+  strategy7Signals[symbol] = "ESPERAR";
+
+  continue;
+
+}
+
+const strategy7MA20 =
+
+  strategy7HourCloses.slice(-20)
+
+    .reduce((a, b) => a + b, 0) / 20;
+
+const strategy7MA40 =
+
+  strategy7HourCloses.slice(-40)
+
+    .reduce((a, b) => a + b, 0) / 40;
+const strategy7PreviousMA20 =
+
+  strategy7HourCloses.slice(-21, -1)
+
+    .reduce((a, b) => a + b, 0) / 20;
+      
+
+    const strategy7Downtrend =
+
+  strategy7MA20 < strategy7MA40 &&
+
+  strategy7MA20 < strategy7PreviousMA20;
+
+      const strategy7Timestamps =
+
+  strategy15Result.timestamp || [];
+
+const strategy7TodayNY =
+
+  new Date().toLocaleDateString("en-CA", {
+
+    timeZone: "America/New_York"
+
+  });
+
+const strategy7MarketOpenIndex =
+
+  strategy7Timestamps.findIndex(timestamp => {
+
+    const candleDateNY =
+
+      new Date(timestamp * 1000).toLocaleDateString("en-CA", {
+
+        timeZone: "America/New_York"
+
+      });
+
+    const candleTimeNY =
+
+      new Date(timestamp * 1000).toLocaleTimeString("en-US", {
+
+        timeZone: "America/New_York",
+
+        hour12: false,
+
+        hour: "2-digit",
+
+        minute: "2-digit"
+
+      });
+
+    return (
+
+      candleDateNY === strategy7TodayNY &&
+
+      candleTimeNY === "09:30"
+
+    );
+
+  });
+      const strategy7Open15 =
+
+  strategy7MarketOpenIndex !== -1
+
+    ? strategy15Quote.open[strategy7MarketOpenIndex]
+
+    : null;
+
+const strategy7PreviousClose =
+
+  strategy7MarketOpenIndex > 0
+
+    ? strategy15Quote.close[strategy7MarketOpenIndex - 1]
+
+    : null;
+
+const strategy7GapDown =
+
+  strategy7Open15 !== null &&
+
+  strategy7PreviousClose !== null &&
+
+  strategy7Open15 < strategy7PreviousClose;
+
+      const strategy7FarBelowMA20 =
+
+  strategy7Open15 !== null &&
+
+  strategy7Open15 < strategy7MA20 * 0.98;
+
+      const strategy7BandCloses =
+
+  strategy7MarketOpenIndex >= 20
+
+    ? strategy15Quote.close
+
+        .slice(
+
+          strategy7MarketOpenIndex - 20,
+
+          strategy7MarketOpenIndex
+
+        )
+
+        .filter(value => value != null)
+
+    : [];
+
+      if (strategy7BandCloses.length < 20) {
+
+  strategy7Signals[symbol] = "ESPERAR";
+
+  continue;
+
+}
+
+      const strategy7BandMiddle =
+
+  strategy7BandCloses.reduce((sum, value) => sum + value, 0) /
+
+  strategy7BandCloses.length;
+
+const strategy7BandVariance =
+
+  strategy7BandCloses.reduce(
+
+    (sum, value) =>
+
+      sum + Math.pow(value - strategy7BandMiddle, 2),
+
+    0
+
+  ) / strategy7BandCloses.length;
+
+const strategy7BandStdDev =
+
+  Math.sqrt(strategy7BandVariance);
+
+const strategy7LowerBand =
+
+  strategy7BandMiddle - (2 * strategy7BandStdDev);
+
+      const strategy7OpenCandleHigh =
+
+  strategy7MarketOpenIndex !== -1
+
+    ? strategy15Quote.high[strategy7MarketOpenIndex]
+
+    : null;
+
+const strategy7OutsideLowerBand =
+
+  strategy7OpenCandleHigh !== null &&
+
+  strategy7OpenCandleHigh < strategy7LowerBand;
+
+
+      const strategy7StartsRecovering =
+
+  strategy7Open15 !== null &&
+
+  price > strategy7Open15;
+      
       if (
 
   strategy7Downtrend &&
+
+  strategy7GapDown &&
 
   strategy7FarBelowMA20 &&
 
@@ -2269,9 +2450,10 @@ const strategy6First5Minutes =
   strategy7StartsRecovering
 
 ) {
-        strategy7Signal = "CALL";
-        
-   }
+
+  strategy7Signal = "CALL";
+
+}
      
       strategy7Signals[symbol] = strategy7Signal;
 
