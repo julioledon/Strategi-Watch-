@@ -1154,6 +1154,41 @@ console.log(
 );
       // ===============================
 
+// TENDENCIA ALCISTA - 1 HORA
+
+// ESTRATEGIA #3
+
+// ===============================
+
+let hourlyBullish3 = false;
+
+if (closes3H1.length >= 6) {
+
+  const recentH1 = closes3H1.slice(-6);
+
+  hourlyBullish3 =
+
+  recentH1[5] > recentH1[4] &&
+
+  recentH1[4] > recentH1[3] &&
+
+  recentH1[3] > recentH1[2];
+
+    
+
+    
+
+}
+
+console.log(
+
+  "Estrategia #3 - tendencia alcista 1H:",
+
+  hourlyBullish3
+
+);
+      // ===============================
+
 // REBOTE HACIA MA20 - 1 HORA
 
 // ESTRATEGIA #3
@@ -1174,9 +1209,11 @@ if (ma20H1 !== null && closes3H1.length >= 2) {
 
   reboundTowardMA20H1 =
 
-    currentCloseH1 > previousCloseH1 &&
+  hourlyBullish3 &&
 
-    currentCloseH1 <= ma20H1;
+  currentCloseH1 > previousCloseH1 &&
+
+  currentCloseH1 <= ma20H1;
 
 }
 
@@ -1209,7 +1246,11 @@ if (ma20H1 !== null && closes3H1.length > 0) {
 
   // Consideramos "zona" cuando está a 0.5% o menos
 
-  nearMA20H1 = distanceToMA20 <= 0.005;
+  nearMA20H1 =
+
+  distanceToMA20 <= 0.005 &&
+
+  currentCloseH1 <= ma20H1;
 
 }
 
@@ -1244,33 +1285,37 @@ let bearishRejection15 = false;
 
 if (
 
-  opens3M15.length > 0 &&
+  opens3M15.length > 2 &&
 
-  highs3M15.length > 0 &&
+  highs3M15.length > 2 &&
 
-  closes3M15.length > 0
+  closes3M15.length > 2
 
 ) {
 
   const currentOpen15 =
 
-    opens3M15[opens3M15.length - 1];
+    opens3M15[opens3M15.length - 2];
 
   const currentHigh15 =
 
-    highs3M15[highs3M15.length - 1];
+    highs3M15[highs3M15.length - 2];
 
   const currentClose15 =
 
-    closes3M15[closes3M15.length - 1];
+    closes3M15[closes3M15.length - 2];
 
   // Vela bajista con rechazo desde arriba
 
   bearishRejection15 =
 
-    currentClose15 < currentOpen15 &&
+  currentClose15 < currentOpen15 &&
 
-    currentHigh15 > currentOpen15;
+  currentHigh15 >= ma20H1 &&
+
+  currentClose15 < ma20H1;
+
+  
 
 }
 
@@ -1297,23 +1342,23 @@ let bearishConfirmationH1 = false;
 
 if (
 
-  opens3H1.length > 0 &&
+  opens3H1.length > 2 &&
 
-  closes3H1.length >= 2
+  closes3H1.length >= 3
 
 ) {
 
   const currentOpenH1 =
 
-    opens3H1[opens3H1.length - 1];
+    opens3H1[opens3H1.length - 2];
 
   const currentCloseH1 =
 
-    closes3H1[closes3H1.length - 1];
+    closes3H1[closes3H1.length - 2];
 
   const previousCloseH1 =
 
-    closes3H1[closes3H1.length - 2];
+    closes3H1[closes3H1.length - 3];
 
   bearishConfirmationH1 =
 
@@ -1379,11 +1424,17 @@ if (closes3Daily.length >= 6) {
 
     closes3Daily.slice(-6);
 
-  dailyBearish3 =
+ dailyBearish3 =
 
-    recentDaily[5] < recentDaily[3] &&
+  recentDaily[5] < recentDaily[4] &&
 
-    recentDaily[3] < recentDaily[1];
+  recentDaily[4] < recentDaily[3] &&
+
+  recentDaily[3] < recentDaily[2]; 
+
+    
+
+    
 
 }
 
@@ -1401,7 +1452,15 @@ if (dailyBearish3 && reboundTowardMA20H1) {
 
 }
 
-if (dailyBearish3 && nearMA20H1) {
+if (
+
+  dailyBearish3 &&
+
+  hourlyBullish3 &&
+
+  nearMA20H1
+
+) {
 
   strategy3Signal = "VIGILAR RECHAZO 👀";
 
@@ -1410,6 +1469,8 @@ if (dailyBearish3 && nearMA20H1) {
 if (
   
   dailyBearish3 &&
+
+  hourlyBullish3 &&
   
   nearMA20H1 &&
 
@@ -1419,7 +1480,7 @@ if (
 
 ) {
 
-  strategy3Signal = "PUT CONFIRMADO 🔴";
+  strategy3Signal = "PUT";
 
 }
 
