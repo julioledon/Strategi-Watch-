@@ -2034,34 +2034,212 @@ const strategy5First5Minutes =
 // =========================
 
 let strategy6Signal = "ESPERAR";
-      const strategy6UpperBand = upperBand;
-      const strategy6MiddleBand = middleBand;
-      const strategy6LowerBand = lowerBand;
+
+      const strategy6Timestamps =
+
+  strategy15Result.timestamp || [];
+
+const strategy6TodayNY =
+
+  new Date().toLocaleDateString("en-CA", {
+
+    timeZone: "America/New_York"
+
+  });
+
+const strategy6MarketOpenIndex =
+
+  strategy6Timestamps.findIndex(timestamp => {
+
+    const candleDateNY =
+
+      new Date(timestamp * 1000).toLocaleDateString("en-CA", {
+
+        timeZone: "America/New_York"
+
+      });
+
+    const candleTimeNY =
+
+      new Date(timestamp * 1000).toLocaleTimeString("en-US", {
+
+        timeZone: "America/New_York",
+
+        hour12: false,
+
+        hour: "2-digit",
+
+        minute: "2-digit"
+
+      });
+
+    return (
+
+      candleDateNY === strategy6TodayNY &&
+
+      candleTimeNY === "09:30"
+
+    );
+
+  });
+
+      const strategy6Closes =
+
+  strategy6MarketOpenIndex >= 20
+
+    ? strategy15Quote.close
+
+        .slice(
+
+          strategy6MarketOpenIndex - 20,
+
+          strategy6MarketOpenIndex
+
+        )
+
+        .filter(value => value != null)
+
+    : [];
+
+      if (strategy6Closes.length < 20) {
+
+  strategy6Signals[symbol] = "ESPERAR";
+
+  continue;
+
+}
+
+      const strategy6MiddleBand =
+
+  strategy6Closes.reduce((sum, value) => sum + value, 0) /
+
+  strategy6Closes.length;
+
+const strategy6Variance =
+
+  strategy6Closes.reduce(
+
+    (sum, value) =>
+
+      sum + Math.pow(value - strategy6MiddleBand, 2),
+
+    0
+
+  ) / strategy6Closes.length;
+
+const strategy6StdDev =
+
+  Math.sqrt(strategy6Variance);
+
+const strategy6UpperBand =
+
+  strategy6MiddleBand + (2 * strategy6StdDev);
+
+const strategy6LowerBand =
+
+  strategy6MiddleBand - (2 * strategy6StdDev);
+      
+      
+      
       const strategy6BandWidth =
         strategy6UpperBand - strategy6LowerBand;
       const strategy6BandWidthPercent =
        (strategy6BandWidth / strategy6MiddleBand) * 100;
+
+      const strategy6PreviousMiddleBand =
+
+  strategy6Closes.slice(0, -1)
+
+    .reduce((sum, value) => sum + value, 0) /
+
+  (strategy6Closes.length - 1);
+
+const strategy6MiddleSlopePercent =
+
+  Math.abs(
+
+    (strategy6MiddleBand - strategy6PreviousMiddleBand) /
+
+    strategy6PreviousMiddleBand
+
+  ) * 100;
+
       const strategy6IsLateral =
-        strategy6BandWidthPercent <= 2;
-      const strategy6TouchesLowerBand =
-        price <= strategy6LowerBand;
-      const strategy6PreviousPrice = closes3Daily[closes3Daily.length - 2];
-      const strategy6StartsRising =
-        price > strategy6PreviousPrice;
+
+  strategy6BandWidthPercent <= 2 &&
+
+  strategy6MiddleSlopePercent <= 0.10;
+        
+      const strategy6Open15 =
+
+  strategy6MarketOpenIndex !== -1
+
+    ? strategy15Quote.open[strategy6MarketOpenIndex]
+
+    : null;
+
+const strategy6PreviousClose =
+
+  strategy6MarketOpenIndex > 0
+
+    ? strategy15Quote.close[strategy6MarketOpenIndex - 1]
+
+    : null;
+
+const strategy6GapBelowLower =
+
+  strategy6Open15 !== null &&
+
+  strategy6PreviousClose !== null &&
+
+  strategy6Open15 < strategy6LowerBand &&
+
+  strategy6Open15 < strategy6PreviousClose;
+
+const strategy6StartsRising =
+
+  strategy6Open15 !== null &&
+
+  price > strategy6Open15;
+
+      const strategy6TimeNY =
+
+  new Date().toLocaleTimeString("en-US", {
+
+    timeZone: "America/New_York",
+
+    hour12: false,
+
+    hour: "2-digit",
+
+    minute: "2-digit"
+
+  });
+
+const strategy6First5Minutes =
+
+  strategy6TimeNY >= "09:30" &&
+
+  strategy6TimeNY < "09:35";
       
-     if (
+     
+
+
+       if (
 
   strategy6IsLateral &&
 
-  strategy6TouchesLowerBand &&
+  strategy6GapBelowLower &&
 
-  strategy6StartsRising
+  strategy6StartsRising &&
+
+  strategy6First5Minutes
 
 ) {
 
   strategy6Signal = "CALL";
 
-} 
+}
 
       strategy6Signals[symbol] = strategy6Signal;
 
