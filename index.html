@@ -2989,6 +2989,9 @@ let strategy12Signal = "ANALIZANDO ⏳";
 
 strategy12Signals[symbol] = strategy12Signal;
 
+
+    
+
       
 
 const todasLasSenales = [
@@ -3021,6 +3024,8 @@ const todasLasSenales = [
 
 todasLasSenales.forEach((signal, index) => {
 
+  
+
   const entradasValidas = [
 
     "CALL",
@@ -3039,23 +3044,38 @@ todasLasSenales.forEach((signal, index) => {
 
   const strategy = "Estrategia #" + (index + 1);
 
-  const alertaKey = "alerta_" + (index + 1) + "_" + symbol;
 
-  const alertaAnterior = localStorage.getItem(alertaKey);
 
-  if (entradasValidas.includes(signal) && signal !== alertaAnterior) {
+
+  const estadoKey =
+
+  "estado_" + (index + 1) + "_" + symbol;
+
+const estadoAnterior =
+ localStorage.getItem(estadoKey);
+
+  if (
+
+  entradasValidas.includes(signal) &&
+
+  estadoAnterior !== signal
+
+) {
 
     enviarAlerta(strategy, symbol, signal, price);
+    
+    localStorage.setItem(estadoKey, signal);
 
-    localStorage.setItem(alertaKey, signal);
+    
 
   }
 
   if (!entradasValidas.includes(signal)) {
 
-    localStorage.removeItem(alertaKey);
+  localStorage.removeItem(estadoKey);
 
-  }
+}
+  
 
 });
 
