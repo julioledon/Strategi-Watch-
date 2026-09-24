@@ -2921,23 +2921,264 @@ if (strategy9ClosedCloses15.length >= 21) {
 strategy9Signals[symbol] = strategy9Signal;
 
       // ===== ESTRATEGIA 10 =====
-      let strategy10Signal = "ESPERAR";
-      const strategy10MomentumUp = false;
-      const strategy10MomentumDown = false;
-      
-      const strategy10TrendUp = false;
+let strategy10Signal = "ESPERAR";
 
-      const strategy10TrendDown = false;
-      
-      if (strategy10MomentumUp && strategy10TrendUp) {
-        strategy10Signal = "BUY";
-        } else if (strategy10MomentumDown && strategy10TrendDown) {
-        strategy10Signal = "SELL";
-        }
-      
-      strategy10Signals[symbol] = strategy10Signal;
+const strategy10Closes15 =
 
+  strategy15Quote.close.filter(value => value != null);
 
+const strategy10Highs15 =
+
+  strategy15Quote.high.filter(value => value != null);
+
+const strategy10Lows15 =
+
+  strategy15Quote.low.filter(value => value != null);
+
+const strategy10ClosedCloses15 =
+
+  strategy10Closes15.slice(0, -1);
+
+const strategy10ClosedHighs15 =
+
+  strategy10Highs15.slice(0, -1);
+
+const strategy10ClosedLows15 =
+
+  strategy10Lows15.slice(0, -1);
+
+      let strategy10MiddleBand = null;
+
+if (strategy10ClosedCloses15.length >= 20) {
+
+  const strategy10Last20 =
+
+    strategy10ClosedCloses15.slice(-20);
+
+  strategy10MiddleBand =
+
+    strategy10Last20.reduce(
+
+      (sum, value) => sum + value,
+
+      0
+
+    ) / 20;
+
+}
+
+      let strategy10PreviousMiddleBand = null;
+
+if (strategy10ClosedCloses15.length >= 21) {
+
+  const strategy10Previous20 =
+
+    strategy10ClosedCloses15.slice(-21, -1);
+
+  strategy10PreviousMiddleBand =
+
+    strategy10Previous20.reduce(
+
+      (sum, value) => sum + value,
+
+      0
+
+    ) / 20;
+
+}
+
+      let strategy10BreaksMiddleBand = false;
+
+if (
+
+  strategy10MiddleBand !== null &&
+
+  strategy10PreviousMiddleBand !== null &&
+
+  strategy10ClosedCloses15.length >= 2
+
+) {
+
+  const strategy10CurrentClose =
+
+    strategy10ClosedCloses15[
+
+      strategy10ClosedCloses15.length - 1
+
+    ];
+
+  const strategy10PreviousClose =
+
+    strategy10ClosedCloses15[
+
+      strategy10ClosedCloses15.length - 2
+
+    ];
+
+  strategy10BreaksMiddleBand =
+
+    strategy10PreviousClose >= strategy10PreviousMiddleBand &&
+
+    strategy10CurrentClose < strategy10MiddleBand;
+
+}
+      let strategy10Uptrend = false;
+      let strategy10Sideways = false;
+
+if (
+
+  strategy10ClosedHighs15.length >= 6 &&
+
+  strategy10ClosedLows15.length >= 6
+
+) {
+
+  const strategy10RecentHighs =
+
+    strategy10ClosedHighs15.slice(-6);
+
+  const strategy10RecentLows =
+
+    strategy10ClosedLows15.slice(-6);
+
+  strategy10Uptrend =
+
+    strategy10RecentHighs[3] > strategy10RecentHighs[1] &&
+
+    strategy10RecentLows[3] > strategy10RecentLows[1];
+
+  const strategy10Range =
+
+  Math.max(...strategy10RecentHighs) -
+
+  Math.min(...strategy10RecentLows);
+
+const strategy10AveragePrice =
+
+  (Math.max(...strategy10RecentHighs) +
+
+   Math.min(...strategy10RecentLows)) / 2;
+
+strategy10Sideways =
+
+  strategy10AveragePrice > 0 &&
+
+  strategy10Range / strategy10AveragePrice <= 0.02;
+
+}
+
+      let strategy10BreaksUptrend = false;
+
+if (
+
+  strategy10ClosedLows15.length >= 6 &&
+
+  strategy10ClosedCloses15.length >= 1
+
+) {
+
+  const strategy10TrendLows =
+
+    strategy10ClosedLows15.slice(-6);
+
+  const strategy10TrendSlope =
+
+    (strategy10TrendLows[4] - strategy10TrendLows[0]) / 4;
+
+  const strategy10TrendLine =
+
+    strategy10TrendLows[4] + strategy10TrendSlope;
+
+  const strategy10LastClose =
+
+    strategy10ClosedCloses15[
+
+      strategy10ClosedCloses15.length - 1
+
+    ];
+
+  strategy10BreaksUptrend =
+
+  (strategy10Uptrend || strategy10Sideways) &&
+
+  strategy10LastClose < strategy10TrendLine;
+
+  
+
+  
+
+}
+      let strategy10VolatilityExpanding = false;
+
+if (strategy10ClosedCloses15.length >= 21) {
+
+  const current20 =
+
+    strategy10ClosedCloses15.slice(-20);
+
+  const previous20 =
+
+    strategy10ClosedCloses15.slice(-21, -1);
+
+  const currentMean =
+
+    current20.reduce((a, b) => a + b, 0) / 20;
+
+  const previousMean =
+
+    previous20.reduce((a, b) => a + b, 0) / 20;
+
+  const currentStd =
+
+    Math.sqrt(
+
+      current20.reduce(
+
+        (sum, value) => sum + Math.pow(value - currentMean, 2),
+
+        0
+
+      ) / 20
+
+    );
+
+  const previousStd =
+
+    Math.sqrt(
+
+      previous20.reduce(
+
+        (sum, value) => sum + Math.pow(value - previousMean, 2),
+
+        0
+
+      ) / 20
+
+    );
+
+  strategy10VolatilityExpanding =
+
+    currentStd > previousStd;
+
+}
+      if (
+
+  (strategy10Uptrend || strategy10Sideways) &&
+
+  strategy10BreaksUptrend &&
+
+  strategy10BreaksMiddleBand &&
+
+  strategy10VolatilityExpanding
+
+) {
+
+  strategy10Signal = "PUT";
+
+}
+
+strategy10Signals[symbol] = strategy10Signal;
+      
       
       // ===== ESTRATEGIA 11 =====
       let strategy11Signal = "ESPERAR";
