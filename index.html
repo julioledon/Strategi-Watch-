@@ -1393,12 +1393,10 @@ let dailyBearish3 = false;
 // ===============================
 
 const strategy3DailyUrl =
-
-  `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=1d&range=1mo`;
+`https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=1d&range=1mo`;
 
 const strategy3DailyResponse = await fetch(
-
-  `https://api.allorigins.win/raw?url=${encodeURIComponent(strategy3DailyUrl)}`
+`https://api.allorigins.win/raw?url=${encodeURIComponent(strategy3DailyUrl)}`
 
 );
 
