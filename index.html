@@ -1508,7 +1508,7 @@ console.log(
 
       
       
-let strategy4Signal = "VIGILAR REBOTE 👀";
+let strategy4Signal =  "ESPERAR ⏳";
       
       // DATOS PARA ESTRATEGIA #4
 
@@ -1518,9 +1518,17 @@ const dailyClose =
 
 const dailyMA20 =
 
-  closes3Daily.slice(-20)
+  closes3Daily.length >= 20
 
-    .reduce((total, value) => total + value, 0) / 20;
+    ? closes3Daily.slice(-20)
+
+        .reduce((total, value) => total + value, 0) / 20
+
+    : null;
+
+
+
+    
 
 const h1Close =
 
@@ -1528,9 +1536,19 @@ const h1Close =
 
 const h1MA20 =
 
-  closes3H1.slice(-20)
+  closes3H1.length >= 20
 
-    .reduce((total, value) => total + value, 0) / 20;
+    ? closes3H1.slice(-20)
+
+        .reduce((total, value) => total + value, 0) / 20
+
+    : null;
+
+
+  
+  
+
+    
 
 const h1Open =
 
@@ -1555,22 +1573,190 @@ const m15Open =
     strategy15Quote.open.length - 1
 
   ];
-      const dailyBullish4 =
+      let dailyBullish4 = false;
+
+if (
+
+  dailyMA20 !== null &&
+
+  closes3Daily.length >= 6
+
+) {
+
+  const recentDaily4 = closes3Daily.slice(-6);
+
+  dailyBullish4 =
+
+    recentDaily4[5] > recentDaily4[4] &&
+
+    recentDaily4[4] > recentDaily4[3] &&
+
+    recentDaily4[3] > recentDaily4[2] &&
+
+    dailyClose > dailyMA20;
+
+}
         
 
-  dailyClose > dailyMA20;
-      const hourlyBearish4 =
+  let hourlyBearish4 = false;
 
-  h1Close < h1MA20;
+if (
+
+  h1MA20 !== null &&
+
+  closes3H1.length >= 6
+
+) {
+
+  const recentH1_4 = closes3H1.slice(-6);
+
+  hourlyBearish4 =
+
+    recentH1_4[5] < recentH1_4[4] &&
+
+    recentH1_4[4] < recentH1_4[3] &&
+
+    recentH1_4[3] < recentH1_4[2] &&
+
+    h1Close < h1MA20;
+
+}
+      
+
+  
       const nearDailyMA20 =
 
+  dailyMA20 !== null &&
+
   Math.abs(dailyClose - dailyMA20) / dailyMA20 <= 0.01;
-      const bullishRebound15 =
+ 
 
-  m15Close > m15Open;
-      const bullishConfirmationH1 =
+      const strategy4DailyLow =
 
-  h1Close > h1Open;
+  strategy3DailyQuote.low.filter(value => value != null).slice(-1)[0];
+
+const strategy4RespectsDailyMA20 =
+
+  dailyMA20 !== null &&
+
+  strategy4DailyLow >= dailyMA20 * 0.995 &&
+
+  dailyClose >= dailyMA20;
+
+  
+
+
+
+      const m15Closes4 =
+
+  strategy15Quote.close.filter(value => value != null);
+
+const m15Lows4 =
+
+  strategy15Quote.low.filter(value => value != null);
+
+      const m15Opens4 =
+
+  strategy15Quote.open.filter(value => value != null);
+
+let bullishRebound15 = false;
+
+if (
+
+  m15Closes4.length >= 3 &&
+
+  m15Lows4.length >= 3 &&
+
+  m15Opens4.length >= 2
+
+) {
+
+  const currentClose15 =
+
+    m15Closes4[m15Closes4.length - 2];
+
+  const previousClose15 =
+
+    m15Closes4[m15Closes4.length - 3];
+
+  const currentLow15 =
+
+    m15Lows4[m15Lows4.length - 2];
+
+  const previousLow15 =
+
+    m15Lows4[m15Lows4.length - 3];
+
+  const currentOpen15 =
+
+  m15Opens4[m15Opens4.length - 2];
+
+  bullishRebound15 =
+
+    currentClose15 > previousClose15 &&
+
+    currentLow15 > previousLow15 &&
+
+    currentClose15 > currentOpen15;
+
+}
+
+  
+      const strategy4OpensH1 =
+
+  strategy3H1Quote.open.filter(value => value != null);
+
+const strategy4ClosesH1 =
+
+  strategy3H1Quote.close.filter(value => value != null);
+
+let bullishConfirmationH1 = false;
+
+if (
+
+  strategy4OpensH1.length >= 2 &&
+
+  strategy4ClosesH1.length >= 3
+
+) {
+
+  const closedOpenH1 =
+
+    strategy4OpensH1[strategy4OpensH1.length - 2];
+
+  const closedCloseH1 =
+
+    strategy4ClosesH1[strategy4ClosesH1.length - 2];
+
+  const previousCloseH1 =
+
+    strategy4ClosesH1[strategy4ClosesH1.length - 3];
+
+  bullishConfirmationH1 =
+
+    closedCloseH1 > closedOpenH1 &&
+
+    closedCloseH1 > previousCloseH1;
+
+}
+
+      if (
+
+  dailyBullish4 &&
+
+  hourlyBearish4 &&
+
+  nearDailyMA20 &&
+
+  strategy4RespectsDailyMA20
+
+) {
+
+  strategy4Signal = "VIGILAR REBOTE 👀";
+
+}
+      
+  
       if (
 
   dailyBullish4 &&
@@ -1581,10 +1767,12 @@ const m15Open =
 
   bullishRebound15 &&
 
+  strategy4RespectsDailyMA20 &&
+
   bullishConfirmationH1
 
 ) {
- strategy4Signal = "CALL CONFIRMADO 🟢"; 
+ strategy4Signal = "CALL";
     }
       console.log(
 
