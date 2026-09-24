@@ -2252,9 +2252,11 @@ const strategy6First5Minutes =
 
 // =========================
       let strategy7Signal = "ESPERAR";
+
       const strategy7HourCloses =
 
-  strategy1HQuote.close.filter(value => value != null);
+  strategy3H1Quote.close.filter(value => value != null);
+
       if (strategy7HourCloses.length < 40) {
 
   strategy7Signals[symbol] = "ESPERAR";
