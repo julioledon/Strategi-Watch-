@@ -2465,157 +2465,228 @@ const strategy7OutsideLowerBand =
 // ESTRATEGIA 8
 
 // =========================
-      let strategy8Signal = "ESPERAR";
-      const strategy8MA20 = ma20;
-      const strategy8MA50 =
-      closes3Daily.slice(-50).reduce((a, b) => a + b, 0) /
-      Math.min(closes3Daily.length, 50);
-      let strategy8RSI = 50;
+ let strategy8Signal = "ESPERAR";
 
-if (closes3Daily.length >= 15) {
+const strategy8HourCloses =
 
-  const rsiCloses = closes3Daily.slice(-15);
+  strategy3H1Quote.close.filter(value => value != null);
 
-  let gains = 0;
 
-  let losses = 0;
 
-  for (let i = 1; i < rsiCloses.length; i++) {
 
-    const difference = rsiCloses[i] - rsiCloses[i - 1];
-
-    if (difference > 0) {
-
-      gains += difference;
-
-    } else {
-
-      losses += Math.abs(difference);
-
-    }
-
-  }
-
-  const averageGain = gains / 14;
-
-  const averageLoss = losses / 14;
-
-  if (averageLoss === 0) {
-
-    strategy8RSI = 100;
-
-  } else {
-
-    const rs = averageGain / averageLoss;
-
-    strategy8RSI = 100 - (100 / (1 + rs));
-
-  }
-
-}
-      let strategy8MACD = 0;
-
-let strategy8MACDSignal = 0;
-
-function calculateEMA(values, period) {
-
-  if (values.length < period) return null;
-
-  const multiplier = 2 / (period + 1);
-
-  let ema =
-
-    values.slice(0, period).reduce((a, b) => a + b, 0) / period;
-
-  for (let i = period; i < values.length; i++) {
-
-    ema = (values[i] - ema) * multiplier + ema;
-
-  }
-
-  return ema;
-
-}
-
-      const strategy8EMA12 = calculateEMA(closes3Daily, 12);
-
-const strategy8EMA26 = calculateEMA(closes3Daily, 26);
-
-if (strategy8EMA12 !== null && strategy8EMA26 !== null) {
-
-  strategy8MACD = strategy8EMA12 - strategy8EMA26;
-
-}
-
-      const strategy8MACDSeries = [];
-
-if (closes3Daily.length >= 35) {
-
-  for (let i = 26; i <= closes3Daily.length; i++) {
-
-    const partialCloses = closes3Daily.slice(0, i);
-
-    const ema12 = calculateEMA(partialCloses, 12);
-
-    const ema26 = calculateEMA(partialCloses, 26);
-
-    if (ema12 !== null && ema26 !== null) {
-
-      strategy8MACDSeries.push(ema12 - ema26);
-
-    }
-
-  }
-
-  const signalEMA = calculateEMA(strategy8MACDSeries, 9);
-
-  if (signalEMA !== null) {
-
-    strategy8MACDSignal = signalEMA;
-
-  }
-
-}
-    
-      const strategy8Volume =
-      strategy3DailyQuote.volume.filter(value => value != null).slice(-1)[0] || 0;
-      const strategy8Volumes =
-      strategy3DailyQuote.volume.filter(value => value != null);
-      const strategy8Last20Volumes =
-      strategy8Volumes.slice(-20);
-      const strategy8AverageVolume =
-      strategy8Last20Volumes.length > 0
-    ? strategy8Last20Volumes.reduce((a, b) => a + b, 0) /
-      strategy8Last20Volumes.length
-     : 0;
-      const strategy8TrendUp = strategy8MA20 > strategy8MA50;
-      const strategy8TrendDown = strategy8MA20 < strategy8MA50;
-      const strategy8MomentumUp = strategy8RSI > 50;
-      const strategy8MomentumDown = strategy8RSI < 50;
-      const strategy8MACDBullish = strategy8MACD > strategy8MACDSignal;
-      const strategy8MACDBearish = strategy8MACD < strategy8MACDSignal;
-      const strategy8VolumeStrong = strategy8Volume > strategy8AverageVolume;
-      const strategy8CallSetup =
-      strategy8TrendUp &&
-      strategy8MomentumUp &&
-      strategy8MACDBullish &&
-      strategy8VolumeStrong;
-      const strategy8PutSetup =
-      strategy8TrendDown &&
-      strategy8MomentumDown &&
-      strategy8MACDBearish &&
-      strategy8VolumeStrong;
-      if (strategy8CallSetup) {
-      strategy8Signal = "CALL";
-    }
-      if (strategy8PutSetup) {
-          strategy8Signal = "PUT";
-        }
-        
-        strategy8Signals[symbol] = strategy8Signal;
-        
       
-      // ===== ESTRATEGIA 9 =====
+const strategy8MA20 =
+
+  strategy8HourCloses.length >= 20
+
+    ? strategy8HourCloses.slice(-20)
+
+        .reduce((a, b) => a + b, 0) / 20
+
+    : null;
+
+const strategy8MA40 =
+
+  strategy8HourCloses.length >= 40
+
+    ? strategy8HourCloses.slice(-40)
+
+        .reduce((a, b) => a + b, 0) / 40
+
+    : null;
+
+      const strategy8Uptrend =
+
+  strategy8MA20 !== null &&
+
+  strategy8MA40 !== null &&
+
+  strategy8MA20 > strategy8MA40;
+
+      const strategy8Timestamps =
+
+  strategy15Result.timestamp || [];
+
+const strategy8TodayNY =
+
+  new Date().toLocaleDateString("en-CA", {
+
+    timeZone: "America/New_York"
+
+  });
+
+const strategy8MarketOpenIndex =
+
+  strategy8Timestamps.findIndex(timestamp => {
+
+    const candleDateNY =
+
+      new Date(timestamp * 1000).toLocaleDateString("en-CA", {
+
+        timeZone: "America/New_York"
+
+      });
+
+    const candleTimeNY =
+
+      new Date(timestamp * 1000).toLocaleTimeString("en-US", {
+
+        timeZone: "America/New_York",
+
+        hour12: false,
+
+        hour: "2-digit",
+
+        minute: "2-digit"
+
+      });
+
+    return (
+
+      candleDateNY === strategy8TodayNY &&
+
+      candleTimeNY === "09:30"
+
+    );
+
+  });
+
+      const strategy8Open15 =
+
+  strategy8MarketOpenIndex !== -1
+
+    ? strategy15Quote.open[strategy8MarketOpenIndex]
+
+    : null;
+
+const strategy8PreviousClose =
+
+  strategy8MarketOpenIndex > 0
+
+    ? strategy15Quote.close[strategy8MarketOpenIndex - 1]
+
+    : null;
+
+const strategy8GapUp =
+
+  strategy8Open15 !== null &&
+
+  strategy8PreviousClose !== null &&
+
+  strategy8Open15 > strategy8PreviousClose;
+
+      const strategy8FarAboveMA20 =
+
+  strategy8Open15 !== null &&
+
+  strategy8MA20 !== null &&
+
+  strategy8Open15 > strategy8MA20 * 1.02;
+
+      const strategy8BandCloses =
+
+  strategy8MarketOpenIndex >= 20
+
+    ? strategy15Quote.close
+
+        .slice(
+
+          strategy8MarketOpenIndex - 20,
+
+          strategy8MarketOpenIndex
+
+        )
+
+        .filter(value => value != null)
+
+    : [];
+
+      const strategy8BandMiddle =
+
+  strategy8BandCloses.length === 20
+
+    ? strategy8BandCloses.reduce((sum, value) => sum + value, 0) / 20
+
+    : null;
+
+const strategy8BandVariance =
+
+  strategy8BandMiddle !== null
+
+    ? strategy8BandCloses.reduce(
+
+        (sum, value) =>
+
+          sum + Math.pow(value - strategy8BandMiddle, 2),
+
+        0
+
+      ) / 20
+
+    : null;
+
+const strategy8BandStdDev =
+
+  strategy8BandVariance !== null
+
+    ? Math.sqrt(strategy8BandVariance)
+
+    : null;
+
+const strategy8UpperBand =
+
+  strategy8BandMiddle !== null &&
+
+  strategy8BandStdDev !== null
+
+    ? strategy8BandMiddle + (2 * strategy8BandStdDev)
+
+    : null;
+
+      const strategy8OpenCandleLow =
+
+  strategy8MarketOpenIndex !== -1
+
+    ? strategy15Quote.low[strategy8MarketOpenIndex]
+
+    : null;
+
+const strategy8OutsideUpperBand =
+
+  strategy8OpenCandleLow !== null &&
+
+  strategy8UpperBand !== null &&
+
+  strategy8OpenCandleLow > strategy8UpperBand;
+
+      const strategy8StartsDropping =
+
+  strategy8Open15 !== null &&
+
+  price < strategy8Open15;
+
+      if (
+
+  strategy8Uptrend &&
+
+  strategy8GapUp &&
+
+  strategy8FarAboveMA20 &&
+
+  strategy8OutsideUpperBand &&
+
+  strategy8StartsDropping
+
+) {
+
+  strategy8Signal = "PUT";
+
+}
+
+strategy8Signals[symbol] = strategy8Signal;
+      
+
+      // ===== ESTRATEGIA9 =====
       let strategy9Signal = "ESPERAR";
       const strategy9MomentumUp = strategy8RSI > 50;
       const strategy9MomentumDown = strategy8RSI < 50;
