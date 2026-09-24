@@ -2688,8 +2688,9 @@ strategy8Signals[symbol] = strategy8Signal;
 
       // ===== ESTRATEGIA9 =====
       let strategy9Signal = "ESPERAR";
-      const strategy9MomentumUp = strategy8RSI > 50;
-      const strategy9MomentumDown = strategy8RSI < 50;
+      const strategy9MomentumUp = false;
+      const strategy9MomentumDown = false;
+      
       const strategy9TrendUp = price > strategy7MA20;
       const strategy9TrendDown = price < strategy7MA20;
       const strategy9Buy = strategy9MomentumUp && strategy9TrendUp;
@@ -2705,14 +2706,12 @@ strategy8Signals[symbol] = strategy8Signal;
 
       // ===== ESTRATEGIA 10 =====
       let strategy10Signal = "ESPERAR";
-      const strategy10MomentumUp = strategy8RSI > 55;
-      const strategy10MomentumDown = strategy8RSI < 45;
-      const strategy10TrendUp =
-      price > strategy7MA20 &&
-      strategy7MA20 > strategy8MA50;
-      const strategy10TrendDown =
-      price < strategy7MA20 &&
-      strategy7MA20 < strategy8MA50;
+      const strategy10MomentumUp = false;
+      const strategy10MomentumDown = false;
+      
+      const strategy10TrendUp = false;
+
+      const strategy10TrendDown = false;
       
       if (strategy10MomentumUp && strategy10TrendUp) {
         strategy10Signal = "BUY";
@@ -2726,8 +2725,9 @@ strategy8Signals[symbol] = strategy8Signal;
       
       // ===== ESTRATEGIA 11 =====
       let strategy11Signal = "ESPERAR";
-      const strategy11MomentumUp = strategy8RSI > 50;
-      const strategy11MomentumDown = strategy8RSI < 50;
+      const strategy11MomentumUp = false;
+      const strategy11MomentumDown = false;
+    
       const strategy11Bullish =
       price > strategy7MA20 &&
       strategy7MA20 > strategy7MA40;
