@@ -1790,9 +1790,6 @@ if (
 // =========================
 let strategy5Signal = "ESPERAR";
       
-      const strategy5AllCloses =
-
-  strategy15Quote.close.filter(value => value != null);
 
 const strategy5AllCloses =
 
@@ -1980,17 +1977,35 @@ const strategy5PreviousClose =
 
   );
 
-const strategy5Minutes =
+const strategy5TimeNY =
 
-  strategy5NowNY.getHours() * 60 +
+  new Date().toLocaleTimeString("en-US", {
 
-  strategy5NowNY.getMinutes();
+    timeZone: "America/New_York",
+
+    hour12: false,
+
+    hour: "2-digit",
+
+    minute: "2-digit"
+
+  });
 
 const strategy5First5Minutes =
 
-  strategy5Minutes >= (9 * 60 + 30) &&
+  strategy5TimeNY >= "09:30" &&
 
-  strategy5Minutes < (9 * 60 + 35);
+  strategy5TimeNY < "09:35";
+
+  
+
+  
+
+
+
+  
+
+  
 
   
 
