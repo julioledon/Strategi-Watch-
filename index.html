@@ -1757,32 +1757,15 @@ if (
     strategy4Signals[symbol] = strategy4Signal;
 
   
+const result = quickResult;
 
+const price = quickPrice;
+
+const previousClose = quickPreviousClose;
+
+const changePercent = quickChangePercent;
       
-      const response = await fetch(
 
-        `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`
-
-      );
-
-      const data = await response.json();
-
-      const result = data.chart.result[0];
-
-      const price = result.meta.regularMarketPrice;
-
-      const previousClose =
-
-  result.meta.previousClose ??
-
-  result.meta.chartPreviousClose;
-
-
-      
-      const changePercent =
-        ((price - previousClose) / previousClose) * 100;
-
-        
         // =========================
 
 // ESTRATEGIA 5
