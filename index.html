@@ -3253,6 +3253,29 @@ if (
       strategy11MA200 <= 0.02;
 
 }
+      const strategy11HourTimestamps =
+
+  strategy3H1Result?.timestamp || [];
+
+let strategy11TenDaysOrMore = false;
+
+const strategy11LastTimestamp =
+
+  strategy11HourTimestamps.length > 0
+
+    ? strategy11HourTimestamps[
+
+        strategy11HourTimestamps.length - 1
+
+      ] * 1000
+
+    : Date.now();
+
+const strategy11TenDaysAgo =
+
+  strategy11LastTimestamp -
+
+  (10 * 24 * 60 * 60 * 1000);
 
       let strategy11SidewaysFor10Days = false;
       const strategy11RawHourCloses =
@@ -3290,7 +3313,42 @@ for (
   }
 
 }
-      if (
+ 
+
+      
+
+const strategy11CandlesLast10Days =
+
+  strategy11HourTimestamps.filter(
+
+    timestamp => timestamp * 1000 >= strategy11TenDaysAgo
+
+  );
+
+      if (strategy11CandlesLast10Days.length >= 2) {
+
+  const strategy11First10DayCandle =
+
+    strategy11CandlesLast10Days[0] * 1000;
+
+  const strategy11Last10DayCandle =
+
+    strategy11CandlesLast10Days[
+
+      strategy11CandlesLast10Days.length - 1
+
+    ] * 1000;
+
+  strategy11TenDaysOrMore =
+
+    (strategy11Last10DayCandle - strategy11First10DayCandle) >=
+
+    (9 * 24 * 60 * 60 * 1000);
+
+}
+
+
+           if (
 
   strategy11TenDaysOrMore &&
 
@@ -3326,71 +3384,7 @@ for (
 
 }
 
-      
-      const strategy11HourTimestamps =
-
-  strategy3H1Result?.timestamp || [];
-
-      let strategy11TenDaysOrMore = false;
-
-const strategy11TenDaysAgo =
-
-  Date.now() - (10 * 24 * 60 * 60 * 1000);
-
-const strategy11CandlesLast10Days =
-
-  strategy11HourTimestamps.filter(
-
-    timestamp => timestamp * 1000 >= strategy11TenDaysAgo
-
-  );
-
-      if (strategy11CandlesLast10Days.length >= 2) {
-
-  const strategy11First10DayCandle =
-
-    strategy11CandlesLast10Days[0] * 1000;
-
-  const strategy11Last10DayCandle =
-
-    strategy11CandlesLast10Days[
-
-      strategy11CandlesLast10Days.length - 1
-
-    ] * 1000;
-
-  strategy11TenDaysOrMore =
-
-    (strategy11Last10DayCandle - strategy11First10DayCandle) >=
-
-    (9 * 24 * 60 * 60 * 1000);
-
-}
-
-
-  const strategy11FirstTime =
-
-    strategy11HourTimestamps[0] * 1000;
-
-  const strategy11LastTime =
-
-    strategy11HourTimestamps[
-
-      strategy11HourTimestamps.length - 1
-
-    ] * 1000;
-
-  const strategy11Days =
-
-    (strategy11LastTime - strategy11FirstTime) /
-
-    (1000 * 60 * 60 * 24);
-
-  strategy11TenDaysOrMore =
-
-    strategy11Days >= 10;
-
-}
+  
       let strategy11BreakoutUp = false;
 
 if (
