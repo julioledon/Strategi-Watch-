@@ -1102,7 +1102,7 @@ let strategy3Signal = "ESPERAR ⏳";
 
 const strategy3H1Url =
 
-  `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=1h&range=1mo`;
+  `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=1h&range=3mo`;
 
 const strategy3H1Response = await fetch(
 
@@ -3184,13 +3184,13 @@ strategy10Signals[symbol] = strategy10Signal;
 
 let strategy11Signal = "ESPERAR";
 
-const strategy11HourCloses =
+const strategy11RawClosesForMA =
 
-  strategy3H1Quote.close.filter(value => value != null);
+  strategy3H1Quote.close.slice(0, -1);
 
 const strategy11ClosedHourCloses =
 
-  strategy11HourCloses.slice(0, -1);
+  strategy11RawClosesForMA.filter(value => value != null);
 
 const strategy11MA = (period) => {
 
@@ -3259,34 +3259,50 @@ if (
 
 let strategy11TenDaysOrMore = false;
 
-const strategy11LastTimestamp =
 
-  strategy11HourTimestamps.length > 0
-
-    ? strategy11HourTimestamps[
-
-        strategy11HourTimestamps.length - 1
-
-      ] * 1000
-
-    : Date.now();
-
-const strategy11TenDaysAgo =
-
-  strategy11LastTimestamp -
-
-  (10 * 24 * 60 * 60 * 1000);
 
       let strategy11SidewaysFor10Days = false;
       const strategy11RawHourCloses =
         strategy3H1Quote.close;
-      const strategy11ClosesLast10Days = [];
+
+const strategy11TradingDays = [
+
+  ...new Set(
+
+    strategy11HourTimestamps.map(timestamp =>
+
+      new Date(timestamp * 1000).toLocaleDateString(
+
+        "en-CA",
+
+        { timeZone: "America/New_York" }
+
+      )
+
+    )
+
+  )
+
+];
+
+strategy11TenDaysOrMore =
+
+  strategy11TradingDays.length >= 10;
+
+
+      
+
+      const strategy11Last10TradingDays =
+
+  strategy11TradingDays.slice(-10);
+
+const strategy11ClosesLast10Days = [];
 
 for (
 
   let i = 0;
 
-  i < strategy11HourTimestamps.length;
+  i < strategy11HourTimestamps.length - 1;
 
   i++
 
@@ -3294,15 +3310,25 @@ for (
 
   const timestamp =
 
-    strategy11HourTimestamps[i] * 1000;
+    strategy11HourTimestamps[i];
 
   const close =
 
     strategy11RawHourCloses[i];
 
+  const candleDay =
+
+    new Date(timestamp * 1000).toLocaleDateString(
+
+      "en-CA",
+
+      { timeZone: "America/New_York" }
+
+    );
+
   if (
 
-    timestamp >= strategy11TenDaysAgo &&
+    strategy11Last10TradingDays.includes(candleDay) &&
 
     close != null
 
@@ -3313,39 +3339,12 @@ for (
   }
 
 }
+
+  
  
 
       
 
-const strategy11CandlesLast10Days =
-
-  strategy11HourTimestamps.filter(
-
-    timestamp => timestamp * 1000 >= strategy11TenDaysAgo
-
-  );
-
-      if (strategy11CandlesLast10Days.length >= 2) {
-
-  const strategy11First10DayCandle =
-
-    strategy11CandlesLast10Days[0] * 1000;
-
-  const strategy11Last10DayCandle =
-
-    strategy11CandlesLast10Days[
-
-      strategy11CandlesLast10Days.length - 1
-
-    ] * 1000;
-
-  strategy11TenDaysOrMore =
-
-    (strategy11Last10DayCandle - strategy11First10DayCandle) >=
-
-    (9 * 24 * 60 * 60 * 1000);
-
-}
 
 
            if (
@@ -3385,78 +3384,69 @@ const strategy11CandlesLast10Days =
 }
 
   
-      let strategy11BreakoutUp = false;
+  let strategy11BreakoutUp = false;
 
-if (
-
-  strategy11SidewaysFor10Days &&
-
-  strategy11ClosesLast10Days.length >= 2 &&
-
-  strategy11ClosedHourCloses.length >= 1
-
-) {
-
-  const strategy11ChannelHigh =
-
-    Math.max(...strategy11ClosesLast10Days.slice(0, -1));
-
-  const strategy11LastClose =
-
-    strategy11ClosedHourCloses[
-
-      strategy11ClosedHourCloses.length - 1
-
-    ];
-
-  strategy11BreakoutUp =
-
-    strategy11LastClose > strategy11ChannelHigh;
-
-}
-      let strategy11BullishConfirmation = false;
+let strategy11BullishConfirmation = false;
 
 const strategy11RawHourOpens =
 
   strategy3H1Quote.open;
 
-
-
 if (
 
-  strategy11RawHourOpens.length >= 2 &&
+  strategy11SidewaysFor10Days &&
 
-  strategy11RawHourCloses.length >= 2
+  strategy11ClosesLast10Days.length >= 3 &&
+
+  strategy11RawHourCloses.length >= 3 &&
+
+  strategy11RawHourOpens.length >= 3
 
 ) {
+
+  const strategy11BreakoutIndex =
+
+    strategy11RawHourCloses.length - 3;
 
   const strategy11ConfirmationIndex =
 
     strategy11RawHourCloses.length - 2;
 
-  const strategy11LastOpen =
+  const strategy11ChannelHigh =
 
-    strategy11RawHourOpens[
+    Math.max(...strategy11ClosesLast10Days.slice(0, -2));
 
-      strategy11ConfirmationIndex
+  const strategy11BreakoutClose =
 
-    ];
+    strategy11RawHourCloses[strategy11BreakoutIndex];
 
-  const strategy11LastClose =
+  const strategy11ConfirmationOpen =
 
-    strategy11RawHourCloses[
+    strategy11RawHourOpens[strategy11ConfirmationIndex];
 
-      strategy11ConfirmationIndex
+  const strategy11ConfirmationClose =
 
-    ];
+    strategy11RawHourCloses[strategy11ConfirmationIndex];
+
+  strategy11BreakoutUp =
+
+    strategy11BreakoutClose != null &&
+
+    strategy11BreakoutClose > strategy11ChannelHigh;
 
   strategy11BullishConfirmation =
 
-    strategy11LastOpen != null &&
+    strategy11ConfirmationOpen != null &&
 
-    strategy11LastClose != null &&
+    strategy11ConfirmationClose != null &&
 
-    strategy11LastClose > strategy11LastOpen;
+    strategy11ConfirmationClose >
+
+      strategy11ConfirmationOpen &&
+
+    strategy11ConfirmationClose >
+
+      strategy11BreakoutClose;
 
 }
       let strategy11VolatilityExpanding = false;
