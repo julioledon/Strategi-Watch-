@@ -3553,27 +3553,402 @@ strategy11Signals[symbol] = strategy11Signal;
 
 
 
-      
-      // ===== ESTRATEGIA 12 =====
+ // ===== ESTRATEGIA 12 =====
 
-let strategy12Signal = "ANALIZANDO ⏳";
-      const strategy12Price = price;
-      const strategy12Change = changePercent;
-      const strategy12Volume =
-      strategy3DailyQuote.volume.filter(value => value != null).slice(-1)[0] || 0;
-      const strategy12Bullish = strategy12Change > 0;
-      const strategy12Bearish = strategy12Change < 0;
-      const strategy12StrongMove = Math.abs(strategy12Change) >= 1;
-      if (strategy12Bullish && strategy12StrongMove) {
-        strategy12Signal = "STRONG CALL";
-        }
-      if (strategy12Bearish && strategy12StrongMove) {
-        strategy12Signal = "STRONG PUT";
-        }
+let strategy12Signal = "ESPERAR";
 
+      const strategy12RawClosesForMA =
+
+  strategy3H1Quote.close.slice(
+
+    0,
+
+    strategy3H1Quote.close.length - 3
+
+  );
+
+const strategy12ClosedHourCloses =
+
+  strategy12RawClosesForMA.filter(value => value != null);
+
+const strategy12MA = (period) => {
+
+  if (strategy12ClosedHourCloses.length < period) {
+
+    return null;
+
+  }
+
+  const values =
+
+    strategy12ClosedHourCloses.slice(-period);
+
+  return values.reduce(
+
+    (sum, value) => sum + value,
+
+    0
+
+  ) / period;
+
+};
+
+const strategy12MA20 = strategy12MA(20);
+
+const strategy12MA40 = strategy12MA(40);
+
+const strategy12MA100 = strategy12MA(100);
+
+const strategy12MA200 = strategy12MA(200);
+
+
+let strategy12MAsSideways = false;
+
+if (
+
+  strategy12MA20 !== null &&
+
+  strategy12MA40 !== null &&
+
+  strategy12MA100 !== null &&
+
+  strategy12MA200 !== null
+
+) {
+
+  const strategy12MAs = [
+
+    strategy12MA20,
+
+    strategy12MA40,
+
+    strategy12MA100,
+
+    strategy12MA200
+
+  ];
+
+  const strategy12HighestMA =
+
+    Math.max(...strategy12MAs);
+
+  const strategy12LowestMA =
+
+    Math.min(...strategy12MAs);
+
+  strategy12MAsSideways =
+
+    (strategy12HighestMA - strategy12LowestMA) /
+
+      strategy12MA200 <= 0.02;
+
+}
+
+      const strategy12HourTimestamps =
+
+  strategy3H1Result?.timestamp || [];
+
+const strategy12RawHourCloses =
+
+  strategy3H1Quote.close;
+
+
+
+const strategy12BreakoutIndex =
+
+  strategy12RawHourCloses.length - 3;
+
+const strategy12ConfirmationIndex =
+
+  strategy12RawHourCloses.length - 2;
+
+
+
+const strategy12TradingDaysBeforeBreakout = [
+
+  ...new Set(
+
+    strategy12HourTimestamps
+
+      .slice(0, strategy12BreakoutIndex)
+
+      .map(timestamp =>
+
+        new Date(timestamp * 1000).toLocaleDateString(
+
+          "en-CA",
+
+          { timeZone: "America/New_York" }
+
+        )
+
+      )
+
+  )
+
+];
+
+const strategy12Last10TradingDays =
+
+  strategy12TradingDaysBeforeBreakout.slice(-10);
+
+let strategy12TenDaysOrMore =
+
+  strategy12TradingDaysBeforeBreakout.length >= 10;
+
+const strategy12ClosesLast10Days = [];
+
+      for (
+
+  let i = 0;
+
+  i < strategy12BreakoutIndex;
+
+  i++
+
+) {
+
+  const timestamp =
+
+    strategy12HourTimestamps[i];
+
+  const close =
+
+    strategy12RawHourCloses[i];
+
+  const candleDay =
+
+    new Date(timestamp * 1000).toLocaleDateString(
+
+      "en-CA",
+
+      { timeZone: "America/New_York" }
+
+    );
+
+  if (
+
+    strategy12Last10TradingDays.includes(candleDay) &&
+
+    close != null
+
+  ) {
+
+    strategy12ClosesLast10Days.push(close);
+
+  }
+
+}
+
+      let strategy12SidewaysFor10Days = false;
+
+if (
+
+  strategy12TenDaysOrMore &&
+
+  strategy12ClosesLast10Days.length >= 20
+
+) {
+
+  const strategy12HighestClose =
+
+    Math.max(...strategy12ClosesLast10Days);
+
+  const strategy12LowestClose =
+
+    Math.min(...strategy12ClosesLast10Days);
+
+  const strategy12AverageClose =
+
+    strategy12ClosesLast10Days.reduce(
+
+      (sum, value) => sum + value,
+
+      0
+
+    ) / strategy12ClosesLast10Days.length;
+
+  strategy12SidewaysFor10Days =
+
+    strategy12AverageClose > 0 &&
+
+    (strategy12HighestClose - strategy12LowestClose) /
+
+      strategy12AverageClose <= 0.05;
+
+}
+
+      let strategy12BreakoutDown = false;
+
+let strategy12BearishConfirmation = false;
+
+const strategy12RawHourOpens =
+
+  strategy3H1Quote.open;
+if (
+
+  strategy12SidewaysFor10Days &&
+
+  strategy12ClosesLast10Days.length >= 3 &&
+
+  strategy12RawHourCloses.length >= 3 &&
+
+  strategy12RawHourOpens.length >= 3
+
+) {
+
+
+  const strategy12ChannelLow =
+
+  Math.min(...strategy12ClosesLast10Days);
+
+  const strategy12BreakoutClose =
+
+    strategy12RawHourCloses[strategy12BreakoutIndex];
+
+  const strategy12ConfirmationOpen =
+
+    strategy12RawHourOpens[strategy12ConfirmationIndex];
+
+  const strategy12ConfirmationClose =
+
+    strategy12RawHourCloses[strategy12ConfirmationIndex];
+
+  strategy12BreakoutDown =
+
+    strategy12BreakoutClose != null &&
+
+    strategy12BreakoutClose < strategy12ChannelLow;
+
+  strategy12BearishConfirmation =
+
+    strategy12ConfirmationOpen != null &&
+
+    strategy12ConfirmationClose != null &&
+
+    strategy12ConfirmationClose <
+
+      strategy12ConfirmationOpen &&
+
+    strategy12ConfirmationClose <
+
+      strategy12BreakoutClose;
+
+}
+
+      let strategy12VolatilityExpanding = false;
+
+      const strategy12ClosesThroughConfirmation =
+
+  strategy12RawHourCloses
+
+    .slice(0, strategy12ConfirmationIndex + 1)
+
+    .filter(value => value != null);
+
+
+if (strategy12ClosesThroughConfirmation.length >= 21) {
+
+  const strategy12Current20 =
+
+  strategy12ClosesThroughConfirmation.slice(-20);
+
+const strategy12Previous20 =
+
+  strategy12ClosesThroughConfirmation.slice(-21, -1);
+
+  const strategy12CurrentMean =
+
+    strategy12Current20.reduce((a, b) => a + b, 0) / 20;
+
+  const strategy12PreviousMean =
+
+    strategy12Previous20.reduce((a, b) => a + b, 0) / 20;
+
+  const strategy12CurrentStd =
+
+    Math.sqrt(
+
+      strategy12Current20.reduce(
+
+        (sum, value) =>
+
+          sum + Math.pow(value - strategy12CurrentMean, 2),
+
+        0
+
+      ) / 20
+
+    );
+
+  const strategy12PreviousStd =
+
+    Math.sqrt(
+
+      strategy12Previous20.reduce(
+
+        (sum, value) =>
+
+          sum + Math.pow(value - strategy12PreviousMean, 2),
+
+        0
+
+      ) / 20
+
+    );
+
+  const strategy12CurrentBandWidth =
+
+    strategy12CurrentMean > 0
+
+      ? (4 * strategy12CurrentStd) / strategy12CurrentMean
+
+      : 0;
+
+  const strategy12PreviousBandWidth =
+
+    strategy12PreviousMean > 0
+
+      ? (4 * strategy12PreviousStd) / strategy12PreviousMean
+
+      : 0;
+
+  strategy12VolatilityExpanding =
+
+    strategy12CurrentBandWidth >
+
+    strategy12PreviousBandWidth;
+
+}
+
+      if (
+
+  strategy12MAsSideways &&
+
+  strategy12TenDaysOrMore &&
+
+  strategy12SidewaysFor10Days &&
+
+  strategy12BreakoutDown &&
+
+  strategy12BearishConfirmation &&
+
+  strategy12VolatilityExpanding
+
+) {
+
+  strategy12Signal = "PUT";
+
+}
 
 strategy12Signals[symbol] = strategy12Signal;
 
+
+
+
+
+
+      
 
     
 
