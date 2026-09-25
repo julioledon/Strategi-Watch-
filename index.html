@@ -730,9 +730,24 @@ console.log(
 
 // DATOS 1 HORA - ESTRATEGIA #2
 
-const strategy2H1Result = strategyResult;
+const strategy2H1Url =
 
-const strategy2H1Quote = strategyQuote;
+`https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=1h&range=1mo`;
+
+const strategy2H1Response = await fetch(
+
+  `https://api.allorigins.win/raw?url=${encodeURIComponent(strategy2H1Url)}`
+
+);
+
+const strategy2H1Data = await strategy2H1Response.json();
+
+const strategy2H1Result = strategy2H1Data.chart.result[0];
+
+const strategy2H1Quote =
+
+  strategy2H1Result.indicators.quote[0];
+
 
 const strategy2H1Quote =
 
