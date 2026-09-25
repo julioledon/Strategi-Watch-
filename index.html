@@ -3181,35 +3181,387 @@ strategy10Signals[symbol] = strategy10Signal;
       
       
       // ===== ESTRATEGIA 11 =====
-      let strategy11Signal = "ESPERAR";
-      const strategy11MomentumUp = false;
-      const strategy11MomentumDown = false;
-    
-      const strategy11Bullish =
-      price > strategy7MA20 &&
-      strategy7MA20 > strategy7MA40;
-      const strategy11Bearish =
-      price < strategy7MA20 &&
-      strategy7MA20 < strategy7MA40;
-      const strategy11LongTermUp =
-      strategy7MA20 > strategy7MA40;
-      const strategy11LongTermDown =
-      strategy7MA20 < strategy7MA40;
-      const strategy11Volatility = upperBand > lowerBand;
-      const strategy11BreakoutUp = price > upperBand;
-      const strategy11BreakoutDown = price < lowerBand;
+
+let strategy11Signal = "ESPERAR";
+
+const strategy11HourCloses =
+
+  strategy3H1Quote.close.filter(value => value != null);
+
+const strategy11ClosedHourCloses =
+
+  strategy11HourCloses.slice(0, -1);
+
+const strategy11MA = (period) => {
+
+  if (strategy11ClosedHourCloses.length < period) {
+
+    return null;
+
+  }
+
+  const values =
+
+    strategy11ClosedHourCloses.slice(-period);
+
+  return values.reduce((sum, value) => sum + value, 0) / period;
+
+};
+
+const strategy11MA20 = strategy11MA(20);
+
+const strategy11MA40 = strategy11MA(40);
+
+const strategy11MA100 = strategy11MA(100);
+
+const strategy11MA200 = strategy11MA(200);
+
+let strategy11MAsSideways = false;
+
+if (
+
+  strategy11MA20 !== null &&
+
+  strategy11MA40 !== null &&
+
+  strategy11MA100 !== null &&
+
+  strategy11MA200 !== null
+
+) {
+
+  const strategy11MAs = [
+
+    strategy11MA20,
+
+    strategy11MA40,
+
+    strategy11MA100,
+
+    strategy11MA200
+
+  ];
+
+  const strategy11HighestMA = Math.max(...strategy11MAs);
+
+  const strategy11LowestMA = Math.min(...strategy11MAs);
+
+  strategy11MAsSideways =
+
+    (strategy11HighestMA - strategy11LowestMA) /
+
+      strategy11MA200 <= 0.02;
+
+}
+
+      let strategy11SidewaysFor10Days = false;
+      const strategy11RawHourCloses =
+        strategy3H1Quote.close;
+      const strategy11ClosesLast10Days = [];
+
+for (
+
+  let i = 0;
+
+  i < strategy11HourTimestamps.length;
+
+  i++
+
+) {
+
+  const timestamp =
+
+    strategy11HourTimestamps[i] * 1000;
+
+  const close =
+
+    strategy11RawHourCloses[i];
+
+  if (
+
+    timestamp >= strategy11TenDaysAgo &&
+
+    close != null
+
+  ) {
+
+    strategy11ClosesLast10Days.push(close);
+
+  }
+
+}
+      if (
+
+  strategy11TenDaysOrMore &&
+
+  strategy11ClosesLast10Days.length >= 20
+
+) {
+
+  const strategy11HighestClose =
+
+    Math.max(...strategy11ClosesLast10Days);
+
+  const strategy11LowestClose =
+
+    Math.min(...strategy11ClosesLast10Days);
+
+  const strategy11AverageClose =
+
+    strategy11ClosesLast10Days.reduce(
+
+      (sum, value) => sum + value,
+
+      0
+
+    ) / strategy11ClosesLast10Days.length;
+
+  strategy11SidewaysFor10Days =
+
+    strategy11AverageClose > 0 &&
+
+    (strategy11HighestClose - strategy11LowestClose) /
+
+      strategy11AverageClose <= 0.05;
+
+}
+
       
-     
-      if (strategy11Bullish && strategy11LongTermUp && strategy11MomentumUp && strategy11Volatility && strategy11BreakoutUp) {
-      strategy11Signal = "STRONG CALL";
-        }
-      if (strategy11Bearish && strategy11LongTermDown && strategy11MomentumDown && strategy11Volatility && strategy11BreakoutDown) {
-       strategy11Signal = "STRONG PUT";
-        }
+      const strategy11HourTimestamps =
 
-      strategy11Signals[symbol] = strategy11Signal;
+  strategy3H1Result?.timestamp || [];
+
+      let strategy11TenDaysOrMore = false;
+
+const strategy11TenDaysAgo =
+
+  Date.now() - (10 * 24 * 60 * 60 * 1000);
+
+const strategy11CandlesLast10Days =
+
+  strategy11HourTimestamps.filter(
+
+    timestamp => timestamp * 1000 >= strategy11TenDaysAgo
+
+  );
+
+      if (strategy11CandlesLast10Days.length >= 2) {
+
+  const strategy11First10DayCandle =
+
+    strategy11CandlesLast10Days[0] * 1000;
+
+  const strategy11Last10DayCandle =
+
+    strategy11CandlesLast10Days[
+
+      strategy11CandlesLast10Days.length - 1
+
+    ] * 1000;
+
+  strategy11TenDaysOrMore =
+
+    (strategy11Last10DayCandle - strategy11First10DayCandle) >=
+
+    (9 * 24 * 60 * 60 * 1000);
+
+}
 
 
+  const strategy11FirstTime =
+
+    strategy11HourTimestamps[0] * 1000;
+
+  const strategy11LastTime =
+
+    strategy11HourTimestamps[
+
+      strategy11HourTimestamps.length - 1
+
+    ] * 1000;
+
+  const strategy11Days =
+
+    (strategy11LastTime - strategy11FirstTime) /
+
+    (1000 * 60 * 60 * 24);
+
+  strategy11TenDaysOrMore =
+
+    strategy11Days >= 10;
+
+}
+      let strategy11BreakoutUp = false;
+
+if (
+
+  strategy11ClosedHourCloses.length >= 2 &&
+
+  strategy11MA20 !== null &&
+
+  strategy11MA40 !== null &&
+
+  strategy11MA100 !== null &&
+
+  strategy11MA200 !== null
+
+) {
+
+  const strategy11HighestMA =
+
+    Math.max(
+
+      strategy11MA20,
+
+      strategy11MA40,
+
+      strategy11MA100,
+
+      strategy11MA200
+
+    );
+
+  const strategy11LastClose =
+
+    strategy11ClosedHourCloses[
+
+      strategy11ClosedHourCloses.length - 1
+
+    ];
+
+  strategy11BreakoutUp =
+
+    strategy11LastClose > strategy11HighestMA;
+
+}
+      let strategy11BullishConfirmation = false;
+
+const strategy11HourOpens =
+
+  strategy3H1Quote.open.filter(value => value != null);
+
+const strategy11ClosedHourOpens =
+
+  strategy11HourOpens.slice(0, -1);
+
+if (
+
+  strategy11ClosedHourCloses.length >= 1 &&
+
+  strategy11ClosedHourOpens.length >= 1
+
+) {
+
+  const strategy11LastClose =
+
+    strategy11ClosedHourCloses[
+
+      strategy11ClosedHourCloses.length - 1
+
+    ];
+
+  const strategy11LastOpen =
+
+    strategy11ClosedHourOpens[
+
+      strategy11ClosedHourOpens.length - 1
+
+    ];
+
+  strategy11BullishConfirmation =
+
+    strategy11LastClose > strategy11LastOpen;
+
+}
+
+      let strategy11VolatilityExpanding = false;
+
+if (strategy11ClosedHourCloses.length >= 21) {
+
+  const strategy11Current20 =
+
+    strategy11ClosedHourCloses.slice(-20);
+
+  const strategy11Previous20 =
+
+    strategy11ClosedHourCloses.slice(-21, -1);
+
+  const strategy11CurrentMean =
+
+    strategy11Current20.reduce((a, b) => a + b, 0) / 20;
+
+  const strategy11PreviousMean =
+
+    strategy11Previous20.reduce((a, b) => a + b, 0) / 20;
+
+  const strategy11CurrentStd =
+
+    Math.sqrt(
+
+      strategy11Current20.reduce(
+
+        (sum, value) =>
+
+          sum + Math.pow(value - strategy11CurrentMean, 2),
+
+        0
+
+      ) / 20
+
+    );
+
+  const strategy11PreviousStd =
+
+    Math.sqrt(
+
+      strategy11Previous20.reduce(
+
+        (sum, value) =>
+
+          sum + Math.pow(value - strategy11PreviousMean, 2),
+
+        0
+
+      ) / 20
+
+    );
+
+  strategy11VolatilityExpanding =
+
+    strategy11CurrentStd > strategy11PreviousStd;
+
+}
+
+      if (
+
+  strategy11MAsSideways &&
+
+  strategy11TenDaysOrMore &&
+
+  strategy11SidewaysFor10Days &&
+
+  strategy11BreakoutUp &&
+
+  strategy11BullishConfirmation &&
+
+  strategy11VolatilityExpanding
+
+) {
+
+  strategy11Signal = "CALL";
+
+}
+
+strategy11Signals[symbol] = strategy11Signal;
+
+    
+
+
+
+
+
+
+      
       // ===== ESTRATEGIA 12 =====
 
 let strategy12Signal = "ANALIZANDO ⏳";
