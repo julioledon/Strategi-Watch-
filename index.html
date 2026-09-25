@@ -3389,31 +3389,17 @@ const strategy11CandlesLast10Days =
 
 if (
 
-  strategy11ClosedHourCloses.length >= 2 &&
+  strategy11SidewaysFor10Days &&
 
-  strategy11MA20 !== null &&
+  strategy11ClosesLast10Days.length >= 2 &&
 
-  strategy11MA40 !== null &&
-
-  strategy11MA100 !== null &&
-
-  strategy11MA200 !== null
+  strategy11ClosedHourCloses.length >= 1
 
 ) {
 
-  const strategy11HighestMA =
+  const strategy11ChannelHigh =
 
-    Math.max(
-
-      strategy11MA20,
-
-      strategy11MA40,
-
-      strategy11MA100,
-
-      strategy11MA200
-
-    );
+    Math.max(...strategy11ClosesLast10Days.slice(0, -1));
 
   const strategy11LastClose =
 
@@ -3425,49 +3411,54 @@ if (
 
   strategy11BreakoutUp =
 
-    strategy11LastClose > strategy11HighestMA;
+    strategy11LastClose > strategy11ChannelHigh;
 
 }
       let strategy11BullishConfirmation = false;
 
-const strategy11HourOpens =
+const strategy11RawHourOpens =
 
-  strategy3H1Quote.open.filter(value => value != null);
+  strategy3H1Quote.open;
 
-const strategy11ClosedHourOpens =
 
-  strategy11HourOpens.slice(0, -1);
 
 if (
 
-  strategy11ClosedHourCloses.length >= 1 &&
+  strategy11RawHourOpens.length >= 2 &&
 
-  strategy11ClosedHourOpens.length >= 1
+  strategy11RawHourCloses.length >= 2
 
 ) {
 
-  const strategy11LastClose =
+  const strategy11ConfirmationIndex =
 
-    strategy11ClosedHourCloses[
-
-      strategy11ClosedHourCloses.length - 1
-
-    ];
+    strategy11RawHourCloses.length - 2;
 
   const strategy11LastOpen =
 
-    strategy11ClosedHourOpens[
+    strategy11RawHourOpens[
 
-      strategy11ClosedHourOpens.length - 1
+      strategy11ConfirmationIndex
+
+    ];
+
+  const strategy11LastClose =
+
+    strategy11RawHourCloses[
+
+      strategy11ConfirmationIndex
 
     ];
 
   strategy11BullishConfirmation =
 
+    strategy11LastOpen != null &&
+
+    strategy11LastClose != null &&
+
     strategy11LastClose > strategy11LastOpen;
 
 }
-
       let strategy11VolatilityExpanding = false;
 
 if (strategy11ClosedHourCloses.length >= 21) {
@@ -3520,12 +3511,29 @@ if (strategy11ClosedHourCloses.length >= 21) {
 
     );
 
+  const strategy11CurrentBandWidth =
+
+    strategy11CurrentMean > 0
+
+      ? (4 * strategy11CurrentStd) / strategy11CurrentMean
+
+      : 0;
+
+  const strategy11PreviousBandWidth =
+
+    strategy11PreviousMean > 0
+
+      ? (4 * strategy11PreviousStd) / strategy11PreviousMean
+
+      : 0;
+
   strategy11VolatilityExpanding =
 
-    strategy11CurrentStd > strategy11PreviousStd;
+    strategy11CurrentBandWidth >
+
+    strategy11PreviousBandWidth;
 
 }
-
       if (
 
   strategy11MAsSideways &&
