@@ -1763,13 +1763,27 @@ if (
     strategy4Signals[symbol] = strategy4Signal;
 
   
-const result = quickResult;
+const response = await fetch(
 
-const price = quickPrice;
+  `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`
 
-const previousClose = quickPreviousClose;
+);
 
-const changePercent = quickChangePercent;
+const data = await response.json();
+
+const result = data.chart.result[0];
+
+const price = result.meta.regularMarketPrice;
+
+const previousClose =
+
+  result.meta.previousClose ??
+
+  result.meta.chartPreviousClose;
+
+const changePercent =
+
+  ((price - previousClose) / previousClose) * 100;
       
 
         // =========================
